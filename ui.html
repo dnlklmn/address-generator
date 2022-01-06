@@ -1,0 +1,257 @@
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+  h2 {
+    color: #323232;
+    font-family: "Atkinson Hyperlegible";
+    font-weight: 400;
+    font-size: 120%;
+    margin-top: 0;
+  }
+  label {
+    color: #9e9e9e;
+    font-family: "Atkinson Hyperlegible";
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 60%;
+  }
+  select {
+    cursor: pointer;
+    appearance: none;
+    margin-top: 4px;
+    padding: 16px 12px;
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px #323232;
+    border: 0;
+    stroke: 0;
+    outline: none;
+  }
+  select:focus {
+    box-shadow: inset 0 0 0 2px #24cc85;
+    border: 0;
+  }
+  option {
+    font-family: "Atkinson Hyperlegible";
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 120%;
+    border: 0;
+    box-shadow: inset 0 0 0 1px #323232;
+  }
+  input {
+    cursor: pointer;
+    margin-top: 4px;
+    padding: 16px 12px;
+    width: 100%;
+    border-radius: 4px;
+    outline: none;
+    border: 0;
+    box-shadow: inset 0 0 0 1px #323232;
+  }
+  input:focus {
+    border: 0;
+    box-shadow: inset 0 0 0 2px #24cc85;
+  }
+  button {
+    cursor: pointer;
+    border-width: 0;
+    margin-top: 32px;
+    padding: 8px;
+    width: 100%;
+    border-radius: 4px;
+    font-family: "Atkinson Hyperlegible";
+    font-weight: 500;
+    line-height: 28px;
+    text-transform: capitalize;
+    font-size: 16px;
+    letter-spacing: 0.3;
+    box-shadow: 0 4px 4px #30303020;
+    outline: none;
+  }
+  button.primary {
+    background-color: #24cc85;
+    border: 2px solid #24cc85;
+    color: #fff;
+  }
+  button.primary:hover {
+    background-color: #23c580;
+    border: 2px solid #23c580;
+    box-shadow: 0 3px 3px #30303030;
+  }
+  button.secondary {
+    border: 0;
+    background-color: #fff;
+    border: 2px solid #24cc85;
+    color: #24cc85;
+    box-shadow: 0 4px 4px #30303000;
+  }
+  button.secondary:hover {
+    background-color: #d4f7e8;
+    box-shadow: 0 4px 4px #30303000;
+  }
+  button.secondary:disabled {
+    border: 0;
+    opacity: 0.5;
+    background-color: #fff;
+    border: 2px solid #24cc85;
+    color: #24cc85;
+    box-shadow: 0 4px 4px #30303000;
+  }
+
+  .select-wrapper {
+    position: relative;
+  }
+  .select-wrapper::after {
+    content: "expand_more";
+    top: 26px;
+    right: 16px;
+    position: absolute;
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px; /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+  }
+  .form {
+    font-family: "Atkinson Hyperlegible";
+    font-weight: 500;
+    text-transform: capitalize;
+    font-size: 16px;
+    letter-spacing: 0.3;
+    padding: 0;
+  }
+  .range {
+    box-shadow: inset 0 0 0 0px #32323200;
+    padding: 0;
+    background: #24cc85;
+    color: #24cc85;
+  }
+  .range:focus {
+    padding: 0;
+    box-shadow: inset 0 0 0 0px #32323200;
+  }
+</style>
+<link
+  href="https://fonts.googleapis.com/icon?family=Material+Icons"
+  rel="stylesheet"
+/>
+<div style="padding: 8px">
+  <h2>Address Generator</h2>
+  <div class="form">
+    <div class="select-wrapper">
+      <label for="ellipsis">Ellipsis</label>
+      <select name="ellipsis" id="ellipsis">
+        <option value="none">None</option>
+        <option value="center">Center</option>
+        <option value="start">Start</option>
+        <option value="end">End</option>
+      </select>
+    </div>
+    <div style="height: 16px; width: 1px"></div>
+    <div>
+      <label>Number of characters: </label>
+      <div style="display: flex">
+        <input
+          class="range"
+          id="countRange"
+          type="range"
+          value="16"
+          step="2"
+          min="0"
+          max="48"
+        />
+        <div style="width: 48px"></div>
+        <input
+          id="countNumber"
+          type="number"
+          value="16"
+          step="2"
+          style="width: 33%"
+        />
+      </div>
+    </div>
+    <div style="width: 100%; display: flex; align-content: space-between">
+      <button class="secondary" id="replace">Regenerate</button>
+      <div id="buttonSpacer" style="width: 48px; height: 1px"></div>
+      <button class="primary" id="create">Create New</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("ellipsis").onchange = () => {
+    const ellipsis = document.getElementById("ellipsis").value;
+  };
+
+  document.getElementById("create").onclick = () => {
+    const count = document.getElementById("countRange").value;
+    const ellipsis = document.getElementById("ellipsis").value;
+
+    parent.postMessage(
+      { pluginMessage: { type: "create", count, ellipsis } },
+      "*"
+    );
+  };
+
+  document.getElementById("replace").onclick = () => {
+    const count = document.getElementById("countRange").value;
+
+    const ellipsis = document.getElementById("ellipsis").value;
+
+    parent.postMessage(
+      { pluginMessage: { type: "replace", count, ellipsis } },
+      "*"
+    );
+  };
+
+  document.getElementById("ellipsis").onchange = () => {
+    const count = document.getElementById("countRange").value;
+    const ellipsis = document.getElementById("ellipsis").value;
+
+    parent.postMessage(
+      { pluginMessage: { type: "replace", count, ellipsis } },
+      "*"
+    );
+  };
+
+  document.getElementById("countRange").oninput = () => {
+    const currentCount = document.getElementById("countRange").value;
+    document.getElementById("countNumber").value = currentCount;
+
+    const count = document.getElementById("countRange").value;
+    const ellipsis = document.getElementById("ellipsis").value;
+
+    parent.postMessage(
+      { pluginMessage: { type: "replace", count, ellipsis } },
+      "*"
+    );
+  };
+
+  document.getElementById("countNumber").oninput = () => {
+    const currentCount = document.getElementById("countNumber").value;
+    document.getElementById("countRange").value = currentCount;
+
+    const count = document.getElementById("countRange").value;
+    const ellipsis = document.getElementById("ellipsis").value;
+
+    parent.postMessage(
+      { pluginMessage: { type: "replace", count, ellipsis } },
+      "*"
+    );
+  };
+
+  onmessage = (event) => {
+    document.getElementById("replace").style.display = event.data.pluginMessage
+      ? "block"
+      : "none";
+    document.getElementById("buttonSpacer").style.display = event.data
+      .pluginMessage
+      ? "block"
+      : "none";
+  };
+</script>

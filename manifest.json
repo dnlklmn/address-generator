@@ -1,0 +1,8 @@
+{
+  "name": "Web3 Address Generator",
+  "id": "1060991804426210721",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "ui": "ui.html"
+}
