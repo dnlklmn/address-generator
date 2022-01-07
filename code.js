@@ -14,28 +14,51 @@ figma.on("selectionchange", () => {
     node = figma.currentPage.selection[0];
     if (node && figma.currentPage.selection[0].type === "TEXT") {
         figma.loadFontAsync(node.fontName);
+        const numberOfCharacters = node.characters.length;
+        console.log(numberOfCharacters);
         if (node.characters.includes("...")) {
             if (node.characters.startsWith("...")) {
-                figma.ui.postMessage("start");
+                figma.ui.postMessage(["start", numberOfCharacters - 3, node ? 1 : 0]);
             }
             if (node.characters.endsWith("...")) {
-                figma.ui.postMessage("end");
+                figma.ui.postMessage(["end", numberOfCharacters - 3, node ? 1 : 0]);
             }
             if (!node.characters.startsWith("...") &&
                 !node.characters.endsWith("...")) {
-                figma.ui.postMessage("center");
+                figma.ui.postMessage(["center", numberOfCharacters - 3, node ? 1 : 0]);
             }
         }
         else {
-            figma.ui.postMessage("none");
+            figma.ui.postMessage(["none", numberOfCharacters, node ? 1 : 0]);
         }
     }
     if (!node) {
-        figma.ui.postMessage(0);
+        figma.ui.postMessage(["none", 0, node ? 1 : 0]);
     }
 });
 figma.on("run", () => {
-    figma.ui.postMessage(node ? 1 : 0);
+    let ellipsis = "none";
+    let numberOfCharacters = 0;
+    if (node && !node.characters.includes("...")) {
+        ellipsis = "none";
+        numberOfCharacters = node.characters.length;
+    }
+    if (node && node.characters.startsWith("...")) {
+        ellipsis = "start";
+        numberOfCharacters = node.characters.length - 3;
+    }
+    if (node && node.characters.endsWith("...")) {
+        ellipsis = "end";
+        numberOfCharacters = node.characters.length - 3;
+    }
+    if (node &&
+        node.characters.includes("...") &&
+        !node.characters.endsWith("...") &&
+        !node.characters.startsWith("...")) {
+        ellipsis = "center";
+        numberOfCharacters = node.characters.length - 3;
+    }
+    figma.ui.postMessage([ellipsis, numberOfCharacters, node ? 1 : 0]);
 });
 figma.ui.onmessage = (msg) => {
     if (msg.type === "create") {

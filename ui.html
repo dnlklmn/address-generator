@@ -265,12 +265,27 @@
   };
 
   onmessage = (event) => {
-    document.getElementById("replace").style.display =
-      event.data.pluginMessage === 0 ? "none" : "block";
-    document.getElementById("buttonSpacer").style.display =
-      event.data.pluginMessage === 0 ? "none" : "block";
-    document.getElementById("ellipsis").value = event.data.pluginMessage
-      ? event.data.pluginMessage
+    console.log(
+      event.data.pluginMessage[0],
+      event.data.pluginMessage[1],
+      event.data.pluginMessage[2]
+    );
+    document.getElementById("replace").style.display = !event.data
+      .pluginMessage[2]
+      ? "none"
+      : "block";
+    document.getElementById("buttonSpacer").style.display = !event.data
+      .pluginMessage[2]
+      ? "none"
+      : "block";
+    document.getElementById("ellipsis").value = event.data.pluginMessage[0]
+      ? event.data.pluginMessage[0]
       : "none";
+    document.getElementById("countRange").value = event.data.pluginMessage[1]
+      ? event.data.pluginMessage[1]
+      : 16;
+    document.getElementById("countNumber").value = event.data.pluginMessage[1]
+      ? event.data.pluginMessage[1]
+      : 16;
   };
 </script>
