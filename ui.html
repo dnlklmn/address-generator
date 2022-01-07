@@ -265,12 +265,12 @@
   };
 
   onmessage = (event) => {
-    document.getElementById("replace").style.display = event.data.pluginMessage
-      ? "block"
-      : "none";
-    document.getElementById("buttonSpacer").style.display = event.data
-      .pluginMessage
-      ? "block"
+    document.getElementById("replace").style.display =
+      event.data.pluginMessage === 0 ? "none" : "block";
+    document.getElementById("buttonSpacer").style.display =
+      event.data.pluginMessage === 0 ? "none" : "block";
+    document.getElementById("ellipsis").value = event.data.pluginMessage
+      ? event.data.pluginMessage
       : "none";
   };
 </script>

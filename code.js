@@ -14,8 +14,25 @@ figma.on("selectionchange", () => {
     node = figma.currentPage.selection[0];
     if (node && figma.currentPage.selection[0].type === "TEXT") {
         figma.loadFontAsync(node.fontName);
+        if (node.characters.includes("...")) {
+            if (node.characters.startsWith("...")) {
+                figma.ui.postMessage("start");
+            }
+            if (node.characters.endsWith("...")) {
+                figma.ui.postMessage("end");
+            }
+            if (!node.characters.startsWith("...") &&
+                !node.characters.endsWith("...")) {
+                figma.ui.postMessage("center");
+            }
+        }
+        else {
+            figma.ui.postMessage("none");
+        }
     }
-    figma.ui.postMessage(node ? 1 : 0);
+    if (!node) {
+        figma.ui.postMessage(0);
+    }
 });
 figma.on("run", () => {
     figma.ui.postMessage(node ? 1 : 0);
