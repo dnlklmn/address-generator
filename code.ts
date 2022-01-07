@@ -110,6 +110,8 @@ figma.ui.onmessage = (msg) => {
     const textToDisplayBegin = makeid(msg.count / 2);
     const textToDisplayEnd = makeid(msg.count / 2);
 
+    figma.loadFontAsync(node.fontName);
+
     if (msg.ellipsis === "none") {
       node.characters = textToDisplay;
     }
