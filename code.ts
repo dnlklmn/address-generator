@@ -74,7 +74,7 @@ figma.ui.onmessage = (msg) => {
   if (msg.type === "create") {
     const nodes: TextNode[] = [];
 
-    const letterNode = figma.createText();
+    const letterNode: TextNode = figma.createText();
     nodes.push(letterNode);
 
     const textToDisplay = makeid(msg.count);
