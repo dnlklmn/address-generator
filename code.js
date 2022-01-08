@@ -15,7 +15,6 @@ figma.on("selectionchange", () => {
     if (node && figma.currentPage.selection[0].type === "TEXT") {
         figma.loadFontAsync(node.fontName);
         const numberOfCharacters = node.characters.length;
-        console.log(numberOfCharacters);
         if (node.characters.includes("...")) {
             if (node.characters.startsWith("...")) {
                 figma.ui.postMessage(["start", numberOfCharacters - 3, node ? 1 : 0]);
@@ -82,8 +81,9 @@ figma.ui.onmessage = (msg) => {
         }
         letterNode.fontSize = 24;
         letterNode.fontName = { family: "Roboto", style: "Regular" };
+        letterNode.x = figma.viewport.center.x;
+        letterNode.y = figma.viewport.center.y;
         figma.currentPage.selection = nodes;
-        figma.viewport.scrollAndZoomIntoView(nodes);
     }
     if (msg.type === "replace" && figma.currentPage.selection.length == 1) {
         const textToDisplay = makeid(msg.count);
