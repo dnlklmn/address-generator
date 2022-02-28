@@ -146,6 +146,9 @@
     letter-spacing: 0.3;
     padding: 0;
   }
+  .flex-horizontal {
+    flex-direction: column;
+  }
   .range {
     box-shadow: inset 0 0 0 0px #32323200;
     padding: 0;
@@ -162,6 +165,7 @@
 <div style="padding: 8px">
   <h2>Address Generator</h2>
   <div class="form">
+    <div class="flex-horizontal"></div>
     <div class="select-wrapper">
       <label for="ellipsis">Ellipsis</label>
       <select name="ellipsis" id="ellipsis">
@@ -179,6 +183,7 @@
         <option value="start">Start</option>
         <option value="end">End</option>
       </select>
+    </div>
     </div>
     <div style="height: 16px; width: 1px"></div>
     <div>
