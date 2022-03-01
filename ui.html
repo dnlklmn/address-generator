@@ -295,6 +295,7 @@
   };
 
   onmessage = (event) => {
+    console.log(event.data.pluginMessage[3]);
     document.getElementById("replace").style.display = !event.data
       .pluginMessage[2]
       ? "none"

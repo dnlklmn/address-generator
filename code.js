@@ -32,6 +32,14 @@ figma.on("selectionchange", () => {
         chain = "ethereum";
         numberOfCharacters = node.characters.length - 2;
     }
+    if (node && node.characters.startsWith("1")) {
+        chain = "polkadot";
+        numberOfCharacters = node.characters.length;
+    }
+    if (node && isFirstLetterUppercase) {
+        chain = "kusama";
+        numberOfCharacters = node.characters.length;
+    }
     if (node && node.characters.endsWith("...")) {
         ellipsis = "end";
         numberOfCharacters = node.characters.length - 3;
@@ -57,7 +65,7 @@ figma.on("selectionchange", () => {
         if (node.characters.startsWith("1")) {
             chain = "polkadot";
         }
-        if (node.characters.startsWith("A", "B")) {
+        if (node.characters.startsWith("A")) {
             chain = "kusama";
         }
     }
@@ -116,7 +124,7 @@ figma.ui.onmessage = (msg) => {
         prefix = "1";
     }
     if (msg.chain === "kusama") {
-        prefix = "A";
+        prefix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(Math.floor(Math.random() * 26));
     }
     const textToDisplay = prefix === "0x" || ""
         ? prefix + makeid(msg.count)
