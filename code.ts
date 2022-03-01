@@ -33,7 +33,6 @@ figma.on("selectionchange", () => {
   }
   if (node && node.characters.startsWith("...")) {
     ellipsis = "start";
-    chain = "any";
     numberOfCharacters = node.characters.length - 3;
   }
   if (node && node.characters.startsWith("0x")) {
@@ -50,7 +49,7 @@ figma.on("selectionchange", () => {
     if (node.characters.startsWith("1")) {
       chain = "polkadot";
     }
-    if (isFirstLetterUppercase) {
+    if (node.characters.startsWith("A")) {
       chain = "kusama";
     }
   }
@@ -69,7 +68,7 @@ figma.on("selectionchange", () => {
     if (node.characters.startsWith("1")) {
       chain = "polkadot";
     }
-    if (isFirstLetterUppercase) {
+    if (node.characters.startsWith("A", "B")) {
       chain = "kusama";
     }
   }
