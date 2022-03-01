@@ -10,34 +10,61 @@ function makeid(length) {
     return result;
 }
 figma.loadFontAsync({ family: "Roboto", style: "Regular" });
+let ellipsis = "none";
+let chain = "any";
+let numberOfCharacters = 0;
 figma.on("selectionchange", () => {
     node = figma.currentPage.selection[0];
-    if (node && figma.currentPage.selection[0].type === "TEXT") {
-        figma.loadFontAsync(node.fontName);
-        const numberOfCharacters = node.characters.length;
-        if (node.characters.includes("...")) {
-            if (node.characters.startsWith("...")) {
-                figma.ui.postMessage(["start", numberOfCharacters - 3, node ? 1 : 0]);
-            }
-            if (node.characters.endsWith("...")) {
-                figma.ui.postMessage(["end", numberOfCharacters - 3, node ? 1 : 0]);
-            }
-            if (!node.characters.startsWith("...") &&
-                !node.characters.endsWith("...")) {
-                figma.ui.postMessage(["center", numberOfCharacters - 3, node ? 1 : 0]);
-            }
+    let isFirstLetterUppercase = false;
+    if (node) {
+        isFirstLetterUppercase = /^[A-Z]/.test(node.characters);
+    }
+    console.log("starts with capital:" + isFirstLetterUppercase);
+    if (node && !node.characters.includes("...")) {
+        ellipsis = "none";
+        numberOfCharacters = node.characters.length;
+    }
+    if (node && node.characters.startsWith("...")) {
+        ellipsis = "start";
+        chain = "any";
+        numberOfCharacters = node.characters.length - 3;
+    }
+    if (node && node.characters.startsWith("0x")) {
+        chain = "ethereum";
+        numberOfCharacters = node.characters.length - 2;
+    }
+    if (node && node.characters.endsWith("...")) {
+        ellipsis = "end";
+        numberOfCharacters = node.characters.length - 3;
+        if (node.characters.startsWith("0x")) {
+            chain = "ethereum";
         }
-        else {
-            figma.ui.postMessage(["none", numberOfCharacters, node ? 1 : 0]);
+        if (node.characters.startsWith("1")) {
+            chain = "polkadot";
+        }
+        if (isFirstLetterUppercase) {
+            chain = "kusama";
         }
     }
-    if (!node) {
-        figma.ui.postMessage(["none", 0, node ? 1 : 0]);
+    if (node &&
+        node.characters.includes("...") &&
+        !node.characters.endsWith("...") &&
+        !node.characters.startsWith("...")) {
+        ellipsis = "center";
+        numberOfCharacters = node.characters.length - 3;
+        if (node.characters.startsWith("0x")) {
+            chain = "ethereum";
+        }
+        if (node.characters.startsWith("1")) {
+            chain = "polkadot";
+        }
+        if (isFirstLetterUppercase) {
+            chain = "kusama";
+        }
     }
+    figma.ui.postMessage([ellipsis, numberOfCharacters, node ? 1 : 0, chain]);
 });
 figma.on("run", () => {
-    let ellipsis = "none";
-    let numberOfCharacters = 0;
     if (node && !node.characters.includes("...")) {
         ellipsis = "none";
         numberOfCharacters = node.characters.length;
@@ -46,9 +73,22 @@ figma.on("run", () => {
         ellipsis = "start";
         numberOfCharacters = node.characters.length - 3;
     }
+    if (node && node.characters.startsWith("0x")) {
+        chain = "ethereum";
+        numberOfCharacters = node.characters.length - 2;
+    }
     if (node && node.characters.endsWith("...")) {
         ellipsis = "end";
         numberOfCharacters = node.characters.length - 3;
+        if (node.characters.startsWith("0x")) {
+            chain = "ethereum";
+        }
+        if (node.characters.startsWith("1")) {
+            chain = "polkadot";
+        }
+        if (node.characters.startsWith("A")) {
+            chain = "kusama";
+        }
     }
     if (node &&
         node.characters.includes("...") &&
@@ -56,17 +96,40 @@ figma.on("run", () => {
         !node.characters.startsWith("...")) {
         ellipsis = "center";
         numberOfCharacters = node.characters.length - 3;
+        if (node.characters.startsWith("0x")) {
+            chain = "ethereum";
+        }
+        if (node.characters.startsWith("1")) {
+            chain = "polkadot";
+        }
+        if (node.characters.startsWith("A")) {
+            chain = "kusama";
+        }
     }
-    figma.ui.postMessage([ellipsis, numberOfCharacters, node ? 1 : 0]);
+    figma.ui.postMessage([ellipsis, numberOfCharacters, node ? 1 : 0, chain]);
 });
 figma.ui.onmessage = (msg) => {
+    let prefix = "";
+    if (msg.chain === "ethereum") {
+        prefix = "0x";
+    }
+    if (msg.chain === "polkadot") {
+        prefix = "1";
+    }
+    if (msg.chain === "kusama") {
+        prefix = "A";
+    }
+    const textToDisplay = prefix === "0x" || ""
+        ? prefix + makeid(msg.count)
+        : prefix + makeid(msg.count - 1);
+    const textToDisplayBegin = prefix === "0x" || ""
+        ? prefix + makeid(msg.count / 2)
+        : prefix + makeid(msg.count / 2 - 1);
+    const textToDisplayEnd = makeid(msg.count / 2);
     if (msg.type === "create") {
         const nodes = [];
         const letterNode = figma.createText();
         nodes.push(letterNode);
-        const textToDisplay = makeid(msg.count);
-        const textToDisplayBegin = makeid(msg.count / 2);
-        const textToDisplayEnd = makeid(msg.count / 2);
         if (msg.ellipsis === "none") {
             letterNode.characters = textToDisplay;
         }
@@ -74,7 +137,7 @@ figma.ui.onmessage = (msg) => {
             letterNode.characters = textToDisplayBegin + "..." + textToDisplayEnd;
         }
         if (msg.ellipsis === "start") {
-            letterNode.characters = "..." + textToDisplay;
+            letterNode.characters = "..." + makeid(msg.count);
         }
         if (msg.ellipsis === "end") {
             letterNode.characters = textToDisplay + "...";
@@ -86,9 +149,6 @@ figma.ui.onmessage = (msg) => {
         figma.currentPage.selection = nodes;
     }
     if (msg.type === "replace" && figma.currentPage.selection.length == 1) {
-        const textToDisplay = makeid(msg.count);
-        const textToDisplayBegin = makeid(msg.count / 2);
-        const textToDisplayEnd = makeid(msg.count / 2);
         figma.loadFontAsync(node.fontName);
         if (msg.ellipsis === "none") {
             node.characters = textToDisplay;
@@ -97,7 +157,7 @@ figma.ui.onmessage = (msg) => {
             node.characters = textToDisplayBegin + "..." + textToDisplayEnd;
         }
         if (msg.ellipsis === "start") {
-            node.characters = "..." + textToDisplay;
+            node.characters = "..." + makeid(msg.count);
         }
         if (msg.ellipsis === "end") {
             node.characters = textToDisplay + "...";
