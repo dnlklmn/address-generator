@@ -224,20 +224,21 @@
   document.getElementById("create").onclick = () => {
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "create", count, ellipsis } },
+      { pluginMessage: { type: "create", count, ellipsis, chain } },
       "*"
     );
   };
 
   document.getElementById("replace").onclick = () => {
     const count = document.getElementById("countRange").value;
-
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis } },
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
       "*"
     );
   };
@@ -245,9 +246,21 @@
   document.getElementById("ellipsis").onchange = () => {
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis } },
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
+      "*"
+    );
+  };
+
+  document.getElementById("chain").onchange = () => {
+    const count = document.getElementById("countRange").value;
+    const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
+
+    parent.postMessage(
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
       "*"
     );
   };
@@ -258,9 +271,10 @@
 
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis } },
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
       "*"
     );
   };
@@ -271,9 +285,10 @@
 
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis } },
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
       "*"
     );
   };
@@ -290,6 +305,9 @@
     document.getElementById("ellipsis").value = event.data.pluginMessage[0]
       ? event.data.pluginMessage[0]
       : "none";
+    document.getElementById("chain").value = event.data.pluginMessage[3]
+      ? event.data.pluginMessage[3]
+      : "any";
     document.getElementById("countRange").value = event.data.pluginMessage[1]
       ? event.data.pluginMessage[1]
       : 16;
