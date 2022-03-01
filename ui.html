@@ -119,8 +119,15 @@
     box-shadow: 0 4px 4px #30303000;
   }
 
+  .plugin-layout {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+  }
+
   .select-wrapper {
     position: relative;
+    width: 45%;
   }
   .select-wrapper::after {
     content: "expand_more";
@@ -148,7 +155,8 @@
   }
   .flex-horizontal {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
   }
   .range {
     box-shadow: inset 0 0 0 0px #32323200;
@@ -163,31 +171,31 @@
   href="https://fonts.googleapis.com/icon?family=Material+Icons"
   rel="stylesheet"
 />
-<div style="padding: 8px">
+<div class="plugin-layout">
   <h2>Address Generator</h2>
   <div class="form">
-    <div class="flex-horizontal"></div>
-    <div class="select-wrapper">
-      <label for="ellipsis">Ellipsis</label>
-      <select name="ellipsis" id="ellipsis">
-        <option value="none">None</option>
-        <option value="center">Center</option>
-        <option value="start">Start</option>
-        <option value="end">End</option>
-      </select>
-    </div>
-    <div class="select-wrapper">
-      <label for="ellipsis">Ellipsis</label>
-      <select name="ellipsis" id="ellipsis">
-        <option value="none">None</option>
-        <option value="center">Center</option>
-        <option value="start">Start</option>
-        <option value="end">End</option>
-      </select>
-    </div>
+    <div class="flex-horizontal">
+      <div class="select-wrapper">
+        <label for="chain">Chain</label>
+        <select name="chain" id="chain">
+          <option value="any">Any</option>
+          <option value="ethereum">Ethereum</option>
+          <option value="polkadot">Polkadot</option>
+          <option value="kusama">Kusama</option>
+        </select>
+      </div>
+      <div class="select-wrapper">
+        <label for="ellipsis">Ellipsis</label>
+        <select name="ellipsis" id="ellipsis">
+          <option value="none">None</option>
+          <option value="center">Center</option>
+          <option value="start">Start</option>
+          <option value="end">End</option>
+        </select>
+      </div>
     </div>
     <div style="height: 16px; width: 1px"></div>
-    <div>
+    <div style="margin-top: 8px">
       <label>Number of characters</label>
       <div style="display: flex">
         <input
@@ -218,9 +226,15 @@
 </div>
 
 <script>
-  document.getElementById("ellipsis").onchange = () => {
-    const ellipsis = document.getElementById("ellipsis").value;
-  };
+  // document.getElementById("ellipsis").onchange = () => {
+  //   const ellipsis = document.getElementById("ellipsis").value;
+  //   console.log("hey hey");
+  // };
+
+  // document.getElementById("chain").onchange = () => {
+  //   const chain = document.getElementById("chain").value;
+  //   console.log("hey ho");
+  // };
 
   document.getElementById("create").onclick = () => {
     const count = document.getElementById("countRange").value;
@@ -236,9 +250,22 @@
     const count = document.getElementById("countRange").value;
 
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis } },
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
+      "*"
+    );
+  };
+
+  document.getElementById("chain").onchange = () => {
+    const count = document.getElementById("countRange").value;
+    const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
+    console.log(ellipsis, chain);
+
+    parent.postMessage(
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
       "*"
     );
   };
@@ -246,9 +273,10 @@
   document.getElementById("ellipsis").onchange = () => {
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis } },
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
       "*"
     );
   };
@@ -259,9 +287,10 @@
 
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis } },
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
       "*"
     );
   };
@@ -272,14 +301,16 @@
 
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis } },
+      { pluginMessage: { type: "replace", count, ellipsis, chain } },
       "*"
     );
   };
 
   onmessage = (event) => {
+    console.log(event.data.pluginMessage);
     document.getElementById("replace").style.display = !event.data
       .pluginMessage[2]
       ? "none"
@@ -291,6 +322,9 @@
     document.getElementById("ellipsis").value = event.data.pluginMessage[0]
       ? event.data.pluginMessage[0]
       : "none";
+    document.getElementById("chain").value = event.data.pluginMessage[3]
+      ? event.data.pluginMessage[3]
+      : "any";
     document.getElementById("countRange").value = event.data.pluginMessage[1]
       ? event.data.pluginMessage[1]
       : 16;

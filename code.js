@@ -12,6 +12,7 @@ function makeid(length) {
 figma.loadFontAsync({ family: "Roboto", style: "Regular" });
 figma.on("selectionchange", () => {
     node = figma.currentPage.selection[0];
+    let chain = "any";
     if (node && figma.currentPage.selection[0].type === "TEXT") {
         figma.loadFontAsync(node.fontName);
         const numberOfCharacters = node.characters.length;
@@ -20,7 +21,38 @@ figma.on("selectionchange", () => {
                 figma.ui.postMessage(["start", numberOfCharacters - 3, node ? 1 : 0]);
             }
             if (node.characters.endsWith("...")) {
-                figma.ui.postMessage(["end", numberOfCharacters - 3, node ? 1 : 0]);
+                if (node.characters.startsWith("0x")) {
+                    figma.ui.postMessage([
+                        "end",
+                        numberOfCharacters - 3,
+                        node ? 1 : 0,
+                        "ethereum",
+                    ]);
+                }
+                if (node.characters.startsWith("1")) {
+                    figma.ui.postMessage([
+                        "end",
+                        numberOfCharacters - 3,
+                        node ? 1 : 0,
+                        "polkadot",
+                    ]);
+                }
+                if (node.characters.startsWith("5")) {
+                    figma.ui.postMessage([
+                        "end",
+                        numberOfCharacters - 3,
+                        node ? 1 : 0,
+                        "kusama",
+                    ]);
+                }
+                else {
+                    figma.ui.postMessage([
+                        "end",
+                        numberOfCharacters - 3,
+                        node ? 1 : 0,
+                        "any",
+                    ]);
+                }
             }
             if (!node.characters.startsWith("...") &&
                 !node.characters.endsWith("...")) {
@@ -30,6 +62,9 @@ figma.on("selectionchange", () => {
         else {
             figma.ui.postMessage(["none", numberOfCharacters, node ? 1 : 0]);
         }
+        if (node.characters.startsWith("...")) {
+            figma.ui.postMessage(["start", numberOfCharacters - 3, node ? 1 : 0]);
+        }
     }
     if (!node) {
         figma.ui.postMessage(["none", 0, node ? 1 : 0]);
@@ -38,6 +73,7 @@ figma.on("selectionchange", () => {
 figma.on("run", () => {
     let ellipsis = "none";
     let numberOfCharacters = 0;
+    let chain = "any";
     if (node && !node.characters.includes("...")) {
         ellipsis = "none";
         numberOfCharacters = node.characters.length;
@@ -57,27 +93,43 @@ figma.on("run", () => {
         ellipsis = "center";
         numberOfCharacters = node.characters.length - 3;
     }
-    figma.ui.postMessage([ellipsis, numberOfCharacters, node ? 1 : 0]);
+    if (node && node.characters.startsWith("0x")) {
+        chain = "ethereum";
+    }
+    figma.ui.postMessage([ellipsis, numberOfCharacters, node ? 1 : 0, chain]);
 });
 figma.ui.onmessage = (msg) => {
     if (msg.type === "create") {
         const nodes = [];
         const letterNode = figma.createText();
         nodes.push(letterNode);
-        const textToDisplay = makeid(msg.count);
-        const textToDisplayBegin = makeid(msg.count / 2);
+        const textToDisplay = msg.chain === "ethereum" ? makeid(msg.count) : makeid(msg.count - 1);
+        const textToDisplayBegin = "ethereum"
+            ? makeid(msg.count / 2)
+            : makeid(msg.count / 2 - 1);
         const textToDisplayEnd = makeid(msg.count / 2);
+        let currentChain = "";
+        if (msg.chain === "ethereum") {
+            currentChain = "0x";
+        }
+        if (msg.chain === "polkadot") {
+            currentChain = "1";
+        }
+        if (msg.chain === "kusama") {
+            currentChain = "A";
+        }
         if (msg.ellipsis === "none") {
-            letterNode.characters = textToDisplay;
+            letterNode.characters = currentChain + textToDisplay;
         }
         if (msg.ellipsis === "center") {
-            letterNode.characters = textToDisplayBegin + "..." + textToDisplayEnd;
+            letterNode.characters =
+                currentChain + textToDisplayBegin + "..." + textToDisplayEnd;
         }
         if (msg.ellipsis === "start") {
             letterNode.characters = "..." + textToDisplay;
         }
         if (msg.ellipsis === "end") {
-            letterNode.characters = textToDisplay + "...";
+            letterNode.characters = currentChain + textToDisplay + "...";
         }
         letterNode.fontSize = 24;
         letterNode.fontName = { family: "Roboto", style: "Regular" };
