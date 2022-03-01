@@ -121,6 +121,7 @@
 
   .select-wrapper {
     position: relative;
+    width: 48%;
   }
   .select-wrapper::after {
     content: "expand_more";
@@ -137,6 +138,12 @@
     letter-spacing: normal;
     word-wrap: normal;
     white-space: nowrap;
+  }
+
+  .flex-horizontal {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
   .form {
     font-family: "Atkinson Hyperlegible";
@@ -162,14 +169,25 @@
 <div style="padding: 8px">
   <h2>Address Generator</h2>
   <div class="form">
-    <div class="select-wrapper">
-      <label for="ellipsis">Ellipsis</label>
-      <select name="ellipsis" id="ellipsis">
-        <option value="none">None</option>
-        <option value="center">Center</option>
-        <option value="start">Start</option>
-        <option value="end">End</option>
-      </select>
+    <div class="flex-horizontal">
+      <div class="select-wrapper">
+        <label for="chain">Chain</label>
+        <select name="chain" id="chain">
+          <option value="any">Any</option>
+          <option value="ethereum">Ethereum</option>
+          <option value="polkadot">Polkadot</option>
+          <option value="kusama">Kusama</option>
+        </select>
+      </div>
+      <div class="select-wrapper">
+        <label for="ellipsis">Ellipsis</label>
+        <select name="ellipsis" id="ellipsis">
+          <option value="none">None</option>
+          <option value="center">Center</option>
+          <option value="start">Start</option>
+          <option value="end">End</option>
+        </select>
+      </div>
     </div>
     <div style="height: 16px; width: 1px"></div>
     <div>
@@ -203,10 +221,6 @@
 </div>
 
 <script>
-  document.getElementById("ellipsis").onchange = () => {
-    const ellipsis = document.getElementById("ellipsis").value;
-  };
-
   document.getElementById("create").onclick = () => {
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
