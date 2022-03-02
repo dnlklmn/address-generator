@@ -19,123 +19,154 @@ let ellipsis = "none";
 let chain = "any";
 let numberOfCharacters = 0;
 
+let isFirstLetterUppercase = false;
+
 figma.on("selectionchange", () => {
   node = figma.currentPage.selection[0];
-  let isFirstLetterUppercase = false;
-  if (node) {
+
+  if (node && node.type == "TEXT") {
+    figma.loadFontAsync(node.fontName);
     isFirstLetterUppercase = /^[A-Z]/.test(node.characters);
-  }
 
-  if (node && !node.characters.includes("...")) {
-    ellipsis = "none";
-    numberOfCharacters = node.characters.length;
-  }
+    if (!node.characters.includes("...")) {
+      ellipsis = "none";
+      numberOfCharacters = node.characters.length;
+    }
 
-  if (node && node.characters.startsWith("...")) {
-    ellipsis = "start";
-    chain = "any";
-    numberOfCharacters = node.characters.length - 3;
-  }
-
-  if (node && node.characters.startsWith("0x")) {
-    chain = "ethereum";
-    numberOfCharacters = node.characters.length - 2;
-  }
-  if (node && node.characters.startsWith("1")) {
-    chain = "polkadot";
-    numberOfCharacters = node.characters.length;
-  }
-  if (node && isFirstLetterUppercase) {
-    chain = "kusama";
-    numberOfCharacters = node.characters.length;
-  }
-  if (node && node.characters.endsWith("...")) {
-    ellipsis = "end";
-    numberOfCharacters = node.characters.length - 3;
+    if (node.characters.startsWith("...")) {
+      ellipsis = "start";
+      chain = "any";
+      numberOfCharacters = node.characters.length - 3;
+    }
 
     if (node.characters.startsWith("0x")) {
       chain = "ethereum";
+      numberOfCharacters = node.characters.length - 2;
     }
-    if (node.characters.startsWith("1")) {
-      chain = "polkadot";
-    }
-    if (node.characters.startsWith("A")) {
-      chain = "kusama";
-    }
-  }
-  if (
-    node &&
-    node.characters.includes("...") &&
-    !node.characters.endsWith("...") &&
-    !node.characters.startsWith("...")
-  ) {
-    ellipsis = "center";
-    numberOfCharacters = node.characters.length - 3;
 
-    if (node.characters.startsWith("0x")) {
-      chain = "ethereum";
-    }
     if (node.characters.startsWith("1")) {
       chain = "polkadot";
+      numberOfCharacters = node.characters.length;
     }
     if (isFirstLetterUppercase) {
       chain = "kusama";
+      numberOfCharacters = node.characters.length;
+    }
+    if (node.characters.endsWith("...")) {
+      ellipsis = "end";
+      numberOfCharacters = node.characters.length - 3;
+
+      if (node.characters.startsWith("0x")) {
+        chain = "ethereum";
+      }
+      if (node.characters.startsWith("1")) {
+        chain = "polkadot";
+      }
+      if (node.characters.startsWith("A")) {
+        chain = "kusama";
+      }
+    }
+    if (
+      node.characters.includes("...") &&
+      !node.characters.endsWith("...") &&
+      !node.characters.startsWith("...")
+    ) {
+      ellipsis = "center";
+      numberOfCharacters = node.characters.length - 3;
+
+      if (node.characters.startsWith("0x")) {
+        chain = "ethereum";
+      }
+      if (node.characters.startsWith("1")) {
+        chain = "polkadot";
+      }
+      if (isFirstLetterUppercase) {
+        chain = "kusama";
+      }
     }
   }
-  figma.ui.postMessage([ellipsis, numberOfCharacters, node ? 1 : 0, chain]);
+
+  figma.ui.postMessage([
+    ellipsis,
+    numberOfCharacters,
+    node ? 1 : 0,
+    chain,
+    node ? node.type : 0,
+  ]);
 });
 
 figma.on("run", () => {
-  let isFirstLetterUppercase = false;
-  if (node) {
+  node = figma.currentPage.selection[0];
+
+  if (node && node.type == "TEXT") {
+    figma.loadFontAsync(node.fontName);
     isFirstLetterUppercase = /^[A-Z]/.test(node.characters);
-  }
-  if (node && !node.characters.includes("...")) {
-    ellipsis = "none";
-    numberOfCharacters = node.characters.length;
-  }
-  if (node && node.characters.startsWith("...")) {
-    ellipsis = "start";
-    numberOfCharacters = node.characters.length - 3;
-  }
-  if (node && node.characters.startsWith("0x")) {
-    chain = "ethereum";
-    numberOfCharacters = node.characters.length - 2;
-  }
-  if (node && node.characters.endsWith("...")) {
-    ellipsis = "end";
-    numberOfCharacters = node.characters.length - 3;
+
+    if (!node.characters.includes("...")) {
+      ellipsis = "none";
+      numberOfCharacters = node.characters.length;
+    }
+
+    if (node.characters.startsWith("...")) {
+      ellipsis = "start";
+      chain = "any";
+      numberOfCharacters = node.characters.length - 3;
+    }
 
     if (node.characters.startsWith("0x")) {
       chain = "ethereum";
+      numberOfCharacters = node.characters.length - 2;
     }
+
     if (node.characters.startsWith("1")) {
       chain = "polkadot";
+      numberOfCharacters = node.characters.length;
     }
     if (isFirstLetterUppercase) {
       chain = "kusama";
+      numberOfCharacters = node.characters.length;
     }
-  }
-  if (
-    node &&
-    node.characters.includes("...") &&
-    !node.characters.endsWith("...") &&
-    !node.characters.startsWith("...")
-  ) {
-    ellipsis = "center";
-    numberOfCharacters = node.characters.length - 3;
+    if (node.characters.endsWith("...")) {
+      ellipsis = "end";
+      numberOfCharacters = node.characters.length - 3;
 
-    if (node.characters.startsWith("0x")) {
-      chain = "ethereum";
+      if (node.characters.startsWith("0x")) {
+        chain = "ethereum";
+      }
+      if (node.characters.startsWith("1")) {
+        chain = "polkadot";
+      }
+      if (node.characters.startsWith("A")) {
+        chain = "kusama";
+      }
     }
-    if (node.characters.startsWith("1")) {
-      chain = "polkadot";
-    }
-    if (node.characters.startsWith("A")) {
-      chain = "kusama";
+    if (
+      node.characters.includes("...") &&
+      !node.characters.endsWith("...") &&
+      !node.characters.startsWith("...")
+    ) {
+      ellipsis = "center";
+      numberOfCharacters = node.characters.length - 3;
+
+      if (node.characters.startsWith("0x")) {
+        chain = "ethereum";
+      }
+      if (node.characters.startsWith("1")) {
+        chain = "polkadot";
+      }
+      if (isFirstLetterUppercase) {
+        chain = "kusama";
+      }
     }
   }
-  figma.ui.postMessage([ellipsis, numberOfCharacters, node ? 1 : 0, chain]);
+
+  figma.ui.postMessage([
+    ellipsis,
+    numberOfCharacters,
+    node ? 1 : 0,
+    chain,
+    node ? node.type : 0,
+  ]);
 });
 
 figma.ui.onmessage = (msg) => {

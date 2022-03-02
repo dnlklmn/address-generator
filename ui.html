@@ -295,14 +295,10 @@
   };
 
   onmessage = (event) => {
-    document.getElementById("replace").style.display = !event.data
-      .pluginMessage[2]
-      ? "none"
-      : "block";
-    document.getElementById("buttonSpacer").style.display = !event.data
-      .pluginMessage[2]
-      ? "none"
-      : "block";
+    document.getElementById("replace").style.display =
+      event.data.pluginMessage[4] === "TEXT" ? "block" : "none";
+    document.getElementById("buttonSpacer").style.display =
+      event.data.pluginMessage[4] === "TEXT" ? "block" : "none";
     document.getElementById("ellipsis").value = event.data.pluginMessage[0]
       ? event.data.pluginMessage[0]
       : "none";
