@@ -1,6 +1,7 @@
 figma.showUI(__html__, { width: 340, height: 300 });
 
 let node: any = figma.currentPage.selection[0];
+let allNodes: any = figma.currentPage.selection;
 
 function makeid(length: Number) {
   var result = "";
@@ -23,6 +24,8 @@ let isFirstLetterUppercase = false;
 
 figma.on("selectionchange", () => {
   node = figma.currentPage.selection[0];
+  allNodes = figma.currentPage.selection;
+  console.log(allNodes);
 
   if (node && node.type == "TEXT") {
     figma.loadFontAsync(node.fontName);
@@ -97,6 +100,8 @@ figma.on("selectionchange", () => {
 
 figma.on("run", () => {
   node = figma.currentPage.selection[0];
+  allNodes = figma.currentPage.selection;
+  console.log(allNodes);
 
   if (node && node.type == "TEXT") {
     figma.loadFontAsync(node.fontName);
