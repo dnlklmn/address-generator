@@ -1,37 +1,40 @@
-<style>
-  @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+<style id="figma-style">
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
   h2 {
-    color: #323232;
-    font-family: "Atkinson Hyperlegible";
+    color: var(--figma-color-text);
+    font-family: "Inter";
     font-weight: 400;
     font-size: 120%;
     margin-top: 0;
   }
   label {
-    color: #9e9e9e;
-    font-family: "Atkinson Hyperlegible";
-    font-weight: 700;
-    text-transform: uppercase;
+    color: var(--figma-color-text-tertiary);
+    font-family: "Inter";
+    font-weight: 500;
+    text-transform: capitalize;
     font-size: 60%;
   }
   select {
     cursor: pointer;
+    background-color: var(--figma-color-bg-secondary);
+    color: var(--figma-color-text);
     appearance: none;
     margin-top: 4px;
     padding: 16px 12px;
     width: 100%;
     border-radius: 4px;
-    box-shadow: inset 0 0 0 1px #32323230;
+    box-shadow: inset 0 0 0 1px var(--figma-color-bg-tertiary);
     border: 0;
     stroke: 0;
     outline: none;
   }
   select:focus {
+    background-color: var(--figma-color-bg-secondary);
     box-shadow: inset 0 0 0 2px #24cc85;
     border: 0;
   }
   option {
-    font-family: "Atkinson Hyperlegible";
+    font-family: "Inter";
     font-weight: 400;
     text-transform: uppercase;
     font-size: 120%;
@@ -47,12 +50,14 @@
     outline: none;
     border: 0;
     box-shadow: inset 0 0 0 1px #32323220;
+    color: var(--figma-color-text);
+    background-color: var(--figma-color-bg-secondary);
   }
   input[type="range"] {
     appearance: none;
   }
   input[type="range"]::-webkit-slider-runnable-track {
-    background: #eee;
+    background-color: var(--figma-color-bg-secondary);
     border-radius: 100px;
     height: 8px;
   }
@@ -80,7 +85,7 @@
     padding: 8px;
     width: 100%;
     border-radius: 4px;
-    font-family: "Atkinson Hyperlegible";
+    font-family: "Inter";
     font-weight: 500;
     line-height: 28px;
     text-transform: capitalize;
@@ -101,13 +106,13 @@
   }
   button.secondary {
     border: 0;
-    background-color: #fff;
+    background-color: var(--figma-color-bg);
     border: 2px solid #24cc85;
     color: #24cc85;
     box-shadow: 0 4px 4px #30303000;
   }
   button.secondary:hover {
-    background-color: #d4f7e8;
+    background-color: var(--figma-color-bg-selected);
     box-shadow: 0 4px 4px #30303000;
   }
   button.secondary:disabled {
@@ -147,7 +152,7 @@
     justify-content: space-between;
   }
   .form {
-    font-family: "Atkinson Hyperlegible";
+    font-family: "Inter";
     font-weight: 500;
     text-transform: capitalize;
     font-size: 16px;
@@ -210,6 +215,7 @@
           step="2"
           min="0"
           max="48"
+          style="background-color: var(--figma-color-background)"
         />
       </div>
     </div>
@@ -217,6 +223,12 @@
       <button class="secondary" id="replace">Regenerate</button>
       <div id="buttonSpacer" style="width: 48px; height: 1px"></div>
       <button class="primary" id="create">Create New</button>
+      <div id="buttonSpacer" style="width: 48px; height: 1px"></div>
+      <button class="primary" id="regenerate-all">Regenerate All</button>
+      <div id="buttonSpacer" style="width: 48px; height: 1px"></div>
+      <button class="secondary" id="deselect-non-text">
+        Deselect Non-Text Objects
+      </button>
     </div>
   </div>
 </div>
@@ -295,13 +307,27 @@
   };
 
   onmessage = (event) => {
+    document.getElementById("create").style.display =
+      event.data.pluginMessage[5] <= 1 && event.data.pluginMessage[6] === 0
+        ? "block"
+        : "none";
     document.getElementById("replace").style.display =
-      event.data.pluginMessage[4] === "TEXT" ? "block" : "none";
+      event.data.pluginMessage[4] === "TEXT" &&
+      event.data.pluginMessage[5] === 1 &&
+      event.data.pluginMessage[6] === 0
+        ? "block"
+        : "none";
+
     document.getElementById("buttonSpacer").style.display =
-      event.data.pluginMessage[4] === "TEXT" ? "block" : "none";
-    document.getElementById("ellipsis").value = event.data.pluginMessage[0]
-      ? event.data.pluginMessage[0]
-      : "none";
+      event.data.pluginMessage[4] === "TEXT" &&
+      event.data.pluginMessage[5] === 1 &&
+      event.data.pluginMessage[6] === 0
+        ? "block"
+        : "none";
+    document.getElementById("ellipsis").value =
+      event.data.pluginMessage[0] && event.data.pluginMessage[6] === 0
+        ? event.data.pluginMessage[0]
+        : "none";
     document.getElementById("chain").value = event.data.pluginMessage[3]
       ? event.data.pluginMessage[3]
       : "any";
@@ -311,5 +337,11 @@
     document.getElementById("countNumber").value = event.data.pluginMessage[1]
       ? event.data.pluginMessage[1]
       : 16;
+    document.getElementById("regenerate-all").style.display =
+      event.data.pluginMessage[5] > 1 && event.data.pluginMessage[6] === 0
+        ? "block"
+        : "none";
+    document.getElementById("deselect-non-text").style.display =
+      event.data.pluginMessage[6] > 0 ? "block" : "none";
   };
 </script>
