@@ -211,36 +211,35 @@ figma.on("run", () => {
   ]);
 });
 
+let prefix = "";
 figma.ui.onmessage = (msg) => {
-  let prefix = "";
-
-  if (msg.chain === "ethereum") {
-    prefix = "0x";
-  }
-  if (msg.chain === "polkadot") {
-    prefix = "1";
-  }
-  if (msg.chain === "kusama") {
-    prefix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(
-      Math.floor(Math.random() * 26)
-    );
-  }
-
-  const textToDisplay =
-    prefix === "0x" || ""
-      ? prefix + makeid(msg.count)
-      : prefix + makeid(msg.count - 1);
-  const textToDisplayBegin =
-    prefix === "0x" || ""
-      ? prefix + makeid(msg.count / 2)
-      : prefix + makeid(msg.count / 2 - 1);
-  const textToDisplayEnd = makeid(msg.count / 2);
-
   if (msg.type === "create") {
     const nodes: TextNode[] = [];
 
     const letterNode: TextNode = figma.createText();
     nodes.push(letterNode);
+
+    if (msg.chain === "ethereum") {
+      prefix = "0x";
+    }
+    if (msg.chain === "polkadot") {
+      prefix = "1";
+    }
+    if (msg.chain === "kusama") {
+      prefix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(
+        Math.floor(Math.random() * 26)
+      );
+    }
+
+    const textToDisplay =
+      prefix === "0x" || ""
+        ? prefix + makeid(msg.count)
+        : prefix + makeid(msg.count - 1);
+    const textToDisplayBegin =
+      prefix === "0x" || ""
+        ? prefix + makeid(msg.count / 2)
+        : prefix + makeid(msg.count / 2 - 1);
+    const textToDisplayEnd = makeid(msg.count / 2);
 
     if (msg.ellipsis === "none") {
       letterNode.characters = textToDisplay;
@@ -259,7 +258,7 @@ figma.ui.onmessage = (msg) => {
     }
 
     letterNode.fontSize = 24;
-    letterNode.fontName = { family: "Roboto", style: "Regular" };
+    letterNode.fontName = { family: "Inter", style: "Regular" };
 
     letterNode.x = figma.viewport.center.x;
     letterNode.y = figma.viewport.center.y;
@@ -267,23 +266,90 @@ figma.ui.onmessage = (msg) => {
     figma.currentPage.selection = nodes;
   }
 
-  if (msg.type === "replace" && figma.currentPage.selection.length == 1) {
-    figma.loadFontAsync(node.fontName);
+  if (msg.type === "regenerate") {
+    for (let i = 0; i < allNodes.length; i++) {
+      figma.loadFontAsync(allNodes[i].fontName);
 
-    if (msg.ellipsis === "none") {
-      node.characters = textToDisplay;
+      if (msg.chain === "ethereum") {
+        prefix = "0x";
+      }
+      if (msg.chain === "polkadot") {
+        prefix = "1";
+      }
+      if (msg.chain === "kusama") {
+        prefix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(
+          Math.floor(Math.random() * 26)
+        );
+      }
+
+      const textToDisplay =
+        prefix === "0x" || ""
+          ? prefix + makeid(msg.count)
+          : prefix + makeid(msg.count - 1);
+      const textToDisplayBegin =
+        prefix === "0x" || ""
+          ? prefix + makeid(msg.count / 2)
+          : prefix + makeid(msg.count / 2 - 1);
+
+      const textToDisplayEnd = makeid(msg.count / 2);
+
+      if (msg.ellipsis === "none") {
+        allNodes[i].characters = textToDisplay;
+      }
+
+      if (msg.ellipsis === "center") {
+        allNodes[i].characters = textToDisplayBegin + "..." + textToDisplayEnd;
+      }
+
+      if (msg.ellipsis === "start") {
+        allNodes[i].characters = "..." + makeid(msg.count);
+      }
+
+      if (msg.ellipsis === "end") {
+        allNodes[i].characters = textToDisplay + "...";
+      }
     }
+  }
 
-    if (msg.ellipsis === "center") {
-      node.characters = textToDisplayBegin + "..." + textToDisplayEnd;
-    }
+  if (msg.type === "regenerate-all") {
+    for (let i = 0; i < allNodes.length; i++) {
+      if (msg.chain === "ethereum") {
+        prefix = "0x";
+      }
+      if (msg.chain === "polkadot") {
+        prefix = "1";
+      }
+      if (msg.chain === "kusama") {
+        prefix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(
+          Math.floor(Math.random() * 26)
+        );
+      }
+      const textToDisplay =
+        prefix === "0x" || ""
+          ? prefix + makeid(msg.count)
+          : prefix + makeid(msg.count - 1);
+      const textToDisplayBegin =
+        prefix === "0x" || ""
+          ? prefix + makeid(msg.count / 2)
+          : prefix + makeid(msg.count / 2 - 1);
+      const textToDisplayEnd = makeid(msg.count / 2);
+      figma.loadFontAsync(allNodes[i].fontName);
 
-    if (msg.ellipsis === "start") {
-      node.characters = "..." + makeid(msg.count);
-    }
+      if (msg.ellipsis === "none") {
+        allNodes[i].characters = textToDisplay;
+      }
 
-    if (msg.ellipsis === "end") {
-      node.characters = textToDisplay + "...";
+      if (msg.ellipsis === "center") {
+        allNodes[i].characters = textToDisplayBegin + "..." + textToDisplayEnd;
+      }
+
+      if (msg.ellipsis === "start") {
+        allNodes[i].characters = "..." + makeid(msg.count);
+      }
+
+      if (msg.ellipsis === "end") {
+        allNodes[i].characters = textToDisplay + "...";
+      }
     }
   }
 
@@ -292,10 +358,11 @@ figma.ui.onmessage = (msg) => {
       if (allNodes[i].type === "TEXT") {
         newSelection.push(allNodes[i]);
       }
-      newSelection === 0 ? figma.currentPage.selection = [] : figma.currentPage.selection = newSelection;
-      }
+      newSelection === 0
+        ? (figma.currentPage.selection = [])
+        : (figma.currentPage.selection = newSelection);
     }
   }
-
-  // figma.closePlugin();
 };
+
+// figma.closePlugin();

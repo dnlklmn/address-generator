@@ -221,7 +221,7 @@
       </div>
     </div>
     <div style="width: 100%; display: flex; align-content: space-between">
-      <button class="secondary" id="replace">Regenerate</button>
+      <button class="secondary" id="regenerate">Regenerate</button>
       <button class="primary" id="create">Create New</button>
       <button class="primary" id="regenerate-all">Regenerate All</button>
       <button class="secondary" id="deselect-non-text">
@@ -243,13 +243,13 @@
     );
   };
 
-  document.getElementById("replace").onclick = () => {
+  document.getElementById("regenerate").onclick = () => {
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
     const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis, chain } },
+      { pluginMessage: { type: "regenerate", count, ellipsis, chain } },
       "*"
     );
   };
@@ -265,13 +265,24 @@
     );
   };
 
+  document.getElementById("regenerate-all").onclick = () => {
+    const count = document.getElementById("countRange").value;
+    const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
+
+    parent.postMessage(
+      { pluginMessage: { type: "regenerate-all", count, ellipsis, chain } },
+      "*"
+    );
+  };
+
   document.getElementById("ellipsis").onchange = () => {
     const count = document.getElementById("countRange").value;
     const ellipsis = document.getElementById("ellipsis").value;
     const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis, chain } },
+      { pluginMessage: { type: "regenerate", count, ellipsis, chain } },
       "*"
     );
   };
@@ -282,7 +293,7 @@
     const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis, chain } },
+      { pluginMessage: { type: "regenerate", count, ellipsis, chain } },
       "*"
     );
   };
@@ -296,7 +307,7 @@
     const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis, chain } },
+      { pluginMessage: { type: "regenerate", count, ellipsis, chain } },
       "*"
     );
   };
@@ -310,7 +321,7 @@
     const chain = document.getElementById("chain").value;
 
     parent.postMessage(
-      { pluginMessage: { type: "replace", count, ellipsis, chain } },
+      { pluginMessage: { type: "regenerate", count, ellipsis, chain } },
       "*"
     );
   };
@@ -318,7 +329,7 @@
   onmessage = (event) => {
     document.getElementById("create").style.display =
       event.data.pluginMessage[4] === 0 ? "block" : "none";
-    document.getElementById("replace").style.display =
+    document.getElementById("regenerate").style.display =
       event.data.pluginMessage[4] === "TEXT" &&
       event.data.pluginMessage[5] === 1 &&
       event.data.pluginMessage[6] === 0
