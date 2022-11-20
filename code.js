@@ -1,6 +1,7 @@
 figma.showUI(__html__, { themeColors: true, width: 340, height: 300 });
 let node = figma.currentPage.selection[0];
 let allNodes = figma.currentPage.selection;
+let newSelection = [];
 function makeid(length) {
     var result = "";
     var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -10,7 +11,7 @@ function makeid(length) {
     }
     return result;
 }
-figma.loadFontAsync({ family: "Roboto", style: "Regular" });
+figma.loadFontAsync({ family: "Inter", style: "Regular" });
 let ellipsis = "none";
 let chain = "any";
 let numberOfCharacters = 0;
@@ -21,10 +22,9 @@ let selectedOtherObjects = [];
 figma.on("selectionchange", () => {
     allNodes = figma.currentPage.selection;
     node = figma.currentPage.selection[0];
-    if (allNodes.length === 0) {
-        selectedTextObjects = [];
-        selectedOtherObjects = [];
-    }
+    selectedTextObjects = [];
+    selectedOtherObjects = [];
+    newSelection = [];
     for (let i = 0; i < allNodes.length; i++) {
         if (allNodes[i] && allNodes[i].type == "TEXT") {
             figma.loadFontAsync(allNodes[i].fontName);
@@ -227,5 +227,13 @@ figma.ui.onmessage = (msg) => {
             node.characters = textToDisplay + "...";
         }
     }
-    // figma.closePlugin();
+    if (msg.type === "deselect-non-text") {
+        for (let i = 0; i < allNodes.length; i++) {
+            if (allNodes[i].type === "TEXT") {
+                newSelection.push(allNodes[i]);
+            }
+            newSelection === 0 ? figma.currentPage.selection = [] : figma.currentPage.selection = newSelection;
+        }
+    }
 };
+;

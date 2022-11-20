@@ -2,6 +2,7 @@ figma.showUI(__html__, { themeColors: true, width: 340, height: 300 });
 
 let node: any = figma.currentPage.selection[0];
 let allNodes: any = figma.currentPage.selection;
+let newSelection: any = [];
 
 function makeid(length: Number) {
   var result = "";
@@ -14,7 +15,7 @@ function makeid(length: Number) {
   return result;
 }
 
-figma.loadFontAsync({ family: "Roboto", style: "Regular" });
+figma.loadFontAsync({ family: "Inter", style: "Regular" });
 
 let ellipsis = "none";
 let chain = "any";
@@ -29,10 +30,9 @@ figma.on("selectionchange", () => {
   allNodes = figma.currentPage.selection;
   node = figma.currentPage.selection[0];
 
-  if (allNodes.length === 0) {
-    selectedTextObjects = [];
-    selectedOtherObjects = [];
-  }
+  selectedTextObjects = [];
+  selectedOtherObjects = [];
+  newSelection = [];
 
   for (let i = 0; i < allNodes.length; i++) {
     if (allNodes[i] && allNodes[i].type == "TEXT") {
@@ -284,6 +284,16 @@ figma.ui.onmessage = (msg) => {
 
     if (msg.ellipsis === "end") {
       node.characters = textToDisplay + "...";
+    }
+  }
+
+  if (msg.type === "deselect-non-text") {
+    for (let i = 0; i < allNodes.length; i++) {
+      if (allNodes[i].type === "TEXT") {
+        newSelection.push(allNodes[i]);
+      }
+      newSelection === 0 ? figma.currentPage.selection = [] : figma.currentPage.selection = newSelection;
+      }
     }
   }
 

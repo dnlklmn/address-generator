@@ -49,9 +49,9 @@
     border-radius: 4px;
     outline: none;
     border: 0;
-    box-shadow: inset 0 0 0 1px #32323220;
     color: var(--figma-color-text);
     background-color: var(--figma-color-bg-secondary);
+    box-shadow: inset 0 0 0 1px var(--figma-color-bg-tertiary);
   }
   input[type="range"] {
     appearance: none;
@@ -144,6 +144,7 @@
     word-wrap: normal;
     white-space: nowrap;
     pointer-events: none;
+    color: var(--figma-color-text-secondary);
   }
 
   .flex-horizontal {
@@ -221,11 +222,8 @@
     </div>
     <div style="width: 100%; display: flex; align-content: space-between">
       <button class="secondary" id="replace">Regenerate</button>
-      <div id="buttonSpacer" style="width: 48px; height: 1px"></div>
       <button class="primary" id="create">Create New</button>
-      <div id="buttonSpacer" style="width: 48px; height: 1px"></div>
       <button class="primary" id="regenerate-all">Regenerate All</button>
-      <div id="buttonSpacer" style="width: 48px; height: 1px"></div>
       <button class="secondary" id="deselect-non-text">
         Deselect Non-Text Objects
       </button>
@@ -252,6 +250,17 @@
 
     parent.postMessage(
       { pluginMessage: { type: "replace", count, ellipsis, chain } },
+      "*"
+    );
+  };
+
+  document.getElementById("deselect-non-text").onclick = () => {
+    const count = document.getElementById("countRange").value;
+    const ellipsis = document.getElementById("ellipsis").value;
+    const chain = document.getElementById("chain").value;
+
+    parent.postMessage(
+      { pluginMessage: { type: "deselect-non-text", count, ellipsis, chain } },
       "*"
     );
   };
@@ -308,9 +317,7 @@
 
   onmessage = (event) => {
     document.getElementById("create").style.display =
-      event.data.pluginMessage[5] <= 1 && event.data.pluginMessage[6] === 0
-        ? "block"
-        : "none";
+      event.data.pluginMessage[4] === 0 ? "block" : "none";
     document.getElementById("replace").style.display =
       event.data.pluginMessage[4] === "TEXT" &&
       event.data.pluginMessage[5] === 1 &&
@@ -318,12 +325,6 @@
         ? "block"
         : "none";
 
-    document.getElementById("buttonSpacer").style.display =
-      event.data.pluginMessage[4] === "TEXT" &&
-      event.data.pluginMessage[5] === 1 &&
-      event.data.pluginMessage[6] === 0
-        ? "block"
-        : "none";
     document.getElementById("ellipsis").value =
       event.data.pluginMessage[0] && event.data.pluginMessage[6] === 0
         ? event.data.pluginMessage[0]
