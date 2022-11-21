@@ -4,7 +4,8 @@
     "lib": ["es6"],
     "typeRoots": [
       "./node_modules/@types",
-      "./node_modules/@figma"
+      "./node_modules/@figma",
+      "./helpers/makeid"
     ]
   }
 }
