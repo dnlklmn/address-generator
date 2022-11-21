@@ -1,3 +1,4 @@
+import { count } from "console";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./ui.css";
@@ -7,24 +8,9 @@ declare function require(path: string): any;
 function App() {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const [countValue, setCountValue] = React.useState(24);
-  let ellipsisValue: any = "any";
-  const [chainValue, setChainValue] = React.useState("any");
-
-  function updateCount(newCountValue: any) {
-    setCountValue(newCountValue);
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "regenerate",
-          countValue,
-          ellipsisValue,
-          chainValue,
-        },
-      },
-      "*"
-    );
-  }
+  let [countValue, setCountValue] = React.useState(24);
+  let ellipsisValue: string = "none";
+  let chainValue: string = "any";
 
   function create() {
     parent.postMessage(
@@ -68,21 +54,8 @@ function App() {
     );
   }
 
-  function regenerateAll() {
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "regenerate-all",
-          countValue,
-          ellipsisValue,
-          chainValue,
-        },
-      },
-      "*"
-    );
-  }
-
-  function ellipsis() {
+  function ellipsis(e: any) {
+    ellipsisValue = e.target.value;
     parent.postMessage(
       {
         pluginMessage: {
@@ -96,7 +69,23 @@ function App() {
     );
   }
 
-  function chain() {
+  function chain(e: any) {
+    chainValue = e.target.value;
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "regenerate",
+          countValue,
+          ellipsisValue,
+          chainValue,
+        },
+      },
+      "*"
+    );
+  }
+
+  function count(e: any) {
+    setCountValue(e.target.value);
     parent.postMessage(
       {
         pluginMessage: {
@@ -126,7 +115,6 @@ function App() {
 
   function countNumber() {
     const currentCount = inputRef.current?.value;
-    // document.getElementById("countRange").value = currentCount;
 
     const count = inputRef.current?.value;
     const ellipsis = inputRef.current?.value;
@@ -138,37 +126,6 @@ function App() {
     );
   }
 
-  // onmessage = (event) => {
-  //   document.getElementById("create").style.display =
-  //     event.data.pluginMessage[4] === 0 ? "block" : "none";
-  //   document.getElementById("regenerate").style.display =
-  //     event.data.pluginMessage[4] === "TEXT" &&
-  //     event.data.pluginMessage[5] === 1 &&
-  //     event.data.pluginMessage[6] === 0
-  //       ? "block"
-  //       : "none";
-
-  //   document.getElementById("ellipsis").value =
-  //     event.data.pluginMessage[0] && event.data.pluginMessage[6] === 0
-  //       ? event.data.pluginMessage[0]
-  //       : "none";
-  //   document.getElementById("chain").value = event.data.pluginMessage[3]
-  //     ? event.data.pluginMessage[3]
-  //     : "any";
-  //   document.getElementById("countRange").value = event.data.pluginMessage[1]
-  //     ? event.data.pluginMessage[1]
-  //     : 16;
-  //   document.getElementById("countNumber").value = event.data.pluginMessage[1]
-  //     ? event.data.pluginMessage[1]
-  //     : 16;
-  //   document.getElementById("regenerate-all").style.display =
-  //     event.data.pluginMessage[5] > 1 && event.data.pluginMessage[6] === 0
-  //       ? "block"
-  //       : "none";
-  //   document.getElementById("deselect-non-text").style.display =
-  //     event.data.pluginMessage[6] > 0 ? "block" : "none";
-  // };
-
   return (
     <div style={{ padding: 8 }}>
       <h2>Random Address Generatorrr</h2>
@@ -176,11 +133,7 @@ function App() {
         <div className="flex-horizontal">
           <div className="select-wrapper">
             <label htmlFor="chain">Chain</label>
-            <select
-              name="chain"
-              id="chain"
-              onChange={(e) => setChainValue(e.target.value)}
-            >
+            <select name="chain" id="chain" onChange={(e) => chain(e)}>
               <option value="any">Any</option>
               <option value="ethereum">Ethereum</option>
               <option value="polkadot">Polkadot</option>
@@ -193,8 +146,7 @@ function App() {
               name="ellipsis"
               id="ellipsis"
               onChange={function e(e) {
-                ellipsis();
-                ellipsisValue = e.target.value;
+                ellipsis(e);
               }}
             >
               <option value="none">None</option>
@@ -214,7 +166,7 @@ function App() {
               value={countValue}
               step="2"
               style={{ width: "33%" }}
-              onChange={(e) => updateCount(Number(e.target.value))}
+              onChange={(e) => count(e)}
             />
             <div style={{ width: 32 }}></div>
             <input
@@ -226,7 +178,7 @@ function App() {
               min="0"
               max="48"
               style={{ backgroundColor: "var(--figma-color-background)" }}
-              onChange={(e) => updateCount(Number(e.target.value))}
+              onChange={(e) => count(e)}
             />
           </div>
         </div>
@@ -237,16 +189,20 @@ function App() {
             alignContent: "space-between",
           }}
         >
-          <button className="secondary" id="regenerate" onClick={regenerate}>
+          <button
+            className="secondary"
+            id="regenerate"
+            onClick={() => regenerate()}
+          >
             Regenerate
           </button>
-          <button className="primary" id="create" onClick={create}>
+          <button className="primary" id="create" onClick={() => create()}>
             Create New
           </button>
           <button
             className="primary"
             id="regenerate-all"
-            onClick={regenerateAll}
+            onClick={() => regenerate()}
           >
             Regenerate All
           </button>

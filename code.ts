@@ -1,74 +1,11 @@
+import { textToDisplay } from "./helpers/helper";
+import { setCharacters } from "./helpers/helper";
+
 figma.showUI(__html__, { themeColors: true, width: 340, height: 300 });
 
 let node: any = figma.currentPage.selection[0];
 let allNodes: any = figma.currentPage.selection;
 let newSelection: any = [];
-
-function makeid(length: Number, msg: any) {
-  var result = "";
-  var characters =
-    msg.chainValue === "ethereum"
-      ? "ABCDEFabcdef0123456"
-      : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-interface textToDisplay {
-  makeid: Function;
-}
-
-function textToDisplay(msg: any) {
-  let prefix = "";
-  if (msg.chainValue === "ethereum") {
-    prefix = "0x";
-  }
-  if (msg.chainValue === "polkadot") {
-    prefix = "1";
-  }
-  if (msg.chainValue === "kusama") {
-    prefix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(
-      Math.floor(Math.random() * 26)
-    );
-  }
-  const textToDisplay =
-    prefix === "0x" || ""
-      ? prefix + makeid(msg.countValue, msg)
-      : prefix + makeid(msg.countValue - 1, msg);
-  const textToDisplayBegin =
-    prefix === "0x" || ""
-      ? prefix + makeid(msg.countValue / 2, msg)
-      : prefix + makeid(msg.countValue / 2 - 1, msg);
-  const textToDisplayEnd = makeid(msg.countValue / 2, msg);
-
-  return [textToDisplay, textToDisplayBegin, textToDisplayEnd];
-}
-
-function setCharacters(msg: any, node: any, address: any) {
-  if (msg.ellipsisValue === "none") {
-    node.characters = address[0];
-  }
-  if (msg.ellipsisValue === "any") {
-    node.characters = address[0];
-  }
-
-  if (msg.ellipsisValue === "center") {
-    node.characters = address[1] + "..." + address[2];
-  }
-
-  if (msg.ellipsisValue === "start") {
-    node.characters = "..." + address[0];
-  }
-
-  if (msg.ellipsisValue === "end") {
-    node.characters = address[0] + "...";
-  }
-
-  return node.characters;
-}
 
 figma.loadFontAsync({ family: "Inter", style: "Regular" });
 
@@ -77,7 +14,6 @@ let chain = "any";
 let numberOfCharacters = 0;
 
 let isFirstLetterUppercase = false;
-let countTextObjects = 0;
 let selectedTextObjects = [];
 let selectedOtherObjects = [];
 
@@ -266,23 +202,25 @@ figma.on("run", () => {
   ]);
 });
 
+//Message from UI
 let prefix = "";
 figma.ui.onmessage = (msg) => {
   if (msg.type === "create") {
     const nodes: TextNode[] = [];
-
-    const letterNode: TextNode = figma.createText();
-    nodes.push(letterNode);
+    const textNode: TextNode = figma.createText();
+    nodes.push(textNode);
 
     let text = textToDisplay(msg);
 
-    letterNode.characters = setCharacters(msg, letterNode, text);
+    console.log("create-message:", msg);
 
-    letterNode.fontSize = 24;
-    letterNode.fontName = { family: "Inter", style: "Regular" };
+    textNode.characters = setCharacters(msg, textNode, text);
 
-    letterNode.x = figma.viewport.center.x;
-    letterNode.y = figma.viewport.center.y;
+    textNode.fontSize = 24;
+    textNode.fontName = { family: "Inter", style: "Regular" };
+
+    textNode.x = figma.viewport.center.x;
+    textNode.y = figma.viewport.center.y;
 
     figma.currentPage.selection = nodes;
   }
@@ -292,7 +230,7 @@ figma.ui.onmessage = (msg) => {
     for (let i = 0; i < allNodes.length; i++) {
       figma.loadFontAsync(allNodes[i].fontName);
       let text = textToDisplay(msg);
-      let chars = setCharacters(msg, allNodes[i], text[0]);
+      let chars = setCharacters(msg, allNodes[i], text);
       allNodes[i].characters = chars;
     }
   }
