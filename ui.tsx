@@ -8,11 +8,10 @@ function App() {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [countValue, setCountValue] = React.useState(24);
-  const [ellipsisValue, setEllipsisValue] = React.useState("none");
+  let ellipsisValue: any = "any";
   const [chainValue, setChainValue] = React.useState("any");
 
   function create() {
-    console.log(countValue, ellipsisValue, chainValue);
     parent.postMessage(
       {
         pluginMessage: {
@@ -68,7 +67,7 @@ function App() {
     );
   }
 
-  function ellipsis() {
+  function ellipsis(e: any) {
     parent.postMessage(
       {
         pluginMessage: {
@@ -178,7 +177,10 @@ function App() {
             <select
               name="ellipsis"
               id="ellipsis"
-              onChange={(e) => setEllipsisValue(e.target.value)}
+              onChange={function e(e) {
+                ellipsis();
+                ellipsisValue = e.target.value;
+              }}
             >
               <option value="none">None</option>
               <option value="center">Center</option>

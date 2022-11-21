@@ -7,7 +7,7 @@ let newSelection: any = [];
 function makeid(length: Number, msg: any) {
   var result = "";
   var characters =
-    msg.chain === "ethereum"
+    msg.chainValue === "ethereum"
       ? "ABCDEFabcdef0123456"
       : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   var charactersLength = characters.length;
@@ -23,44 +23,44 @@ interface textToDisplay {
 
 function textToDisplay(msg: any) {
   let prefix = "";
-  if (msg.chain === "ethereum") {
+  if (msg.chainValue === "ethereum") {
     prefix = "0x";
   }
-  if (msg.chain === "polkadot") {
+  if (msg.chainValue === "polkadot") {
     prefix = "1";
   }
-  if (msg.chain === "kusama") {
+  if (msg.chainValue === "kusama") {
     prefix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(
       Math.floor(Math.random() * 26)
     );
   }
   const textToDisplay =
     prefix === "0x" || ""
-      ? prefix + makeid(msg.count, msg)
-      : prefix + makeid(msg.count - 1, msg);
+      ? prefix + makeid(msg.countValue, msg)
+      : prefix + makeid(msg.countValue - 1, msg);
   const textToDisplayBegin =
     prefix === "0x" || ""
-      ? prefix + makeid(msg.count / 2, msg)
-      : prefix + makeid(msg.count / 2 - 1, msg);
-  const textToDisplayEnd = makeid(msg.count / 2, msg);
+      ? prefix + makeid(msg.countValue / 2, msg)
+      : prefix + makeid(msg.countValue / 2 - 1, msg);
+  const textToDisplayEnd = makeid(msg.countValue / 2, msg);
 
   return [textToDisplay, textToDisplayBegin, textToDisplayEnd];
 }
 
 function setCharacters(msg: any, node: any, address: any) {
-  if (msg.ellipsis === "none") {
+  if (msg.ellipsisValue === "none") {
     node.characters = address[0];
   }
 
-  if (msg.ellipsis === "center") {
+  if (msg.ellipsisValue === "center") {
     node.characters = address[1] + "..." + address[2];
   }
 
-  if (msg.ellipsis === "start") {
-    node.characters = "..." + makeid(msg.count, msg);
+  if (msg.ellipsisValue === "start") {
+    node.characters = "..." + makeid(msg.countValue, msg);
   }
 
-  if (msg.ellipsis === "end") {
+  if (msg.ellipsisValue === "end") {
     node.characters = address[0] + "...";
   }
 
@@ -265,15 +265,13 @@ figma.on("run", () => {
 
 let prefix = "";
 figma.ui.onmessage = (msg) => {
-  console.log("create");
   if (msg.type === "create") {
     const nodes: TextNode[] = [];
 
     const letterNode: TextNode = figma.createText();
     nodes.push(letterNode);
 
-    let chars = setCharacters(msg, letterNode, textToDisplay(msg));
-    letterNode.characters = chars;
+    letterNode.characters = setCharacters(msg, letterNode, textToDisplay(msg));
 
     letterNode.fontSize = 24;
     letterNode.fontName = { family: "Inter", style: "Regular" };
