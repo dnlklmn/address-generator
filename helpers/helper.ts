@@ -62,3 +62,7 @@ export function setCharacters(msg: any, node: any, address: any) {
 
   return node.characters;
 }
+
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

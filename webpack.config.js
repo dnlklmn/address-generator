@@ -13,7 +13,6 @@ module.exports = (env, argv) => ({
   entry: {
     ui: "./ui.tsx", // The entry point for your UI code
     code: "./code.ts", // The entry point for your plugin code
-    helper: "./helpers/helper.ts",
   },
 
   module: {

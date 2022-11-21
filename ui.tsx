@@ -1,16 +1,14 @@
-import { count } from "console";
 import * as React from "react";
+import { useState, useRef } from "react";
 import * as ReactDOM from "react-dom";
 import "./ui.css";
+import { capitalizeFirstLetter } from "./helpers/helper";
 
-declare function require(path: string): any;
+let ellipsisValue: string = "none";
+let chainValue: string = "any";
 
 function App() {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  let [countValue, setCountValue] = React.useState(24);
-  let ellipsisValue: string = "none";
-  let chainValue: string = "any";
+  let [countValue, setCountValue] = useState(24);
 
   function create() {
     parent.postMessage(
@@ -99,32 +97,24 @@ function App() {
     );
   }
 
-  function countRange() {
-    const currentCount = inputRef.current?.value;
-    // document.getElementById("countNumber").value = currentCount;
+  const chainOptions: string[] = ["any", "polkadot", "ethereum", "kusama"];
+  const ellipsisOptions: string[] = ["none", "start", "center", "end"];
 
-    const count = inputRef.current?.value;
-    const ellipsis = inputRef.current?.value;
-    const chain = inputRef.current?.value;
-
-    parent.postMessage(
-      { pluginMessage: { type: "regenerate", count, ellipsis, chain } },
-      "*"
+  let chainList = chainOptions.map((network, i) => {
+    return (
+      <option key={i * Math.random()} value={network.toString()}>
+        {capitalizeFirstLetter(network)}
+      </option>
     );
-  }
+  });
 
-  function countNumber() {
-    const currentCount = inputRef.current?.value;
-
-    const count = inputRef.current?.value;
-    const ellipsis = inputRef.current?.value;
-    const chain = inputRef.current?.value;
-
-    parent.postMessage(
-      { pluginMessage: { type: "regenerate", count, ellipsis, chain } },
-      "*"
+  let ellipsisList = ellipsisOptions.map((location, i) => {
+    return (
+      <option key={i * Math.random()} value={location.toString()}>
+        {capitalizeFirstLetter(location)}
+      </option>
     );
-  }
+  });
 
   return (
     <div style={{ padding: 8 }}>
@@ -134,10 +124,7 @@ function App() {
           <div className="select-wrapper">
             <label htmlFor="chain">Chain</label>
             <select name="chain" id="chain" onChange={(e) => chain(e)}>
-              <option value="any">Any</option>
-              <option value="ethereum">Ethereum</option>
-              <option value="polkadot">Polkadot</option>
-              <option value="kusama">Kusama</option>
+              {chainList}
             </select>
           </div>
           <div className="select-wrapper">
@@ -149,10 +136,7 @@ function App() {
                 ellipsis(e);
               }}
             >
-              <option value="none">None</option>
-              <option value="center">Center</option>
-              <option value="start">Start</option>
-              <option value="end">End</option>
+              {ellipsisList}
             </select>
           </div>
         </div>

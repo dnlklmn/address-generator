@@ -90,12 +90,12 @@ figma.on("selectionchange", () => {
     } else {
       selectedOtherObjects.push(allNodes[i].type);
     }
-    console.log(
-      "text objects selected:",
-      selectedTextObjects.length,
-      ", other objects selected:",
-      selectedOtherObjects.length
-    );
+    // console.log(
+    //   "text objects selected:",
+    //   selectedTextObjects.length,
+    //   ", other objects selected:",
+    //   selectedOtherObjects.length
+    // );
   }
 
   figma.ui.postMessage([
@@ -226,7 +226,6 @@ figma.ui.onmessage = (msg) => {
   }
 
   if (msg.type === "regenerate") {
-    console.log("regenerating now");
     for (let i = 0; i < allNodes.length; i++) {
       figma.loadFontAsync(allNodes[i].fontName);
       let text = textToDisplay(msg);
