@@ -9,6 +9,8 @@
   "author": "",
   "license": "",
   "devDependencies": {
-    "@figma/plugin-typings": "^1.55.1"
+    "@figma/plugin-typings": "^1.55.1",
+    "@types/node": "^18.11.9",
+    "webpack": "^5.75.0"
   }
 }
