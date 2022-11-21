@@ -11,6 +11,21 @@ function App() {
   let ellipsisValue: any = "any";
   const [chainValue, setChainValue] = React.useState("any");
 
+  function updateCount(newCountValue: any) {
+    setCountValue(newCountValue);
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "regenerate",
+          countValue,
+          ellipsisValue,
+          chainValue,
+        },
+      },
+      "*"
+    );
+  }
+
   function create() {
     parent.postMessage(
       {
@@ -67,7 +82,7 @@ function App() {
     );
   }
 
-  function ellipsis(e: any) {
+  function ellipsis() {
     parent.postMessage(
       {
         pluginMessage: {
@@ -199,7 +214,7 @@ function App() {
               value={countValue}
               step="2"
               style={{ width: "33%" }}
-              onChange={(e) => setCountValue(Number(e.target.value))}
+              onChange={(e) => updateCount(Number(e.target.value))}
             />
             <div style={{ width: 32 }}></div>
             <input
@@ -211,7 +226,7 @@ function App() {
               min="0"
               max="48"
               style={{ backgroundColor: "var(--figma-color-background)" }}
-              onChange={(e) => setCountValue(Number(e.target.value))}
+              onChange={(e) => updateCount(Number(e.target.value))}
             />
           </div>
         </div>

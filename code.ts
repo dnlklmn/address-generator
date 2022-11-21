@@ -51,13 +51,16 @@ function setCharacters(msg: any, node: any, address: any) {
   if (msg.ellipsisValue === "none") {
     node.characters = address[0];
   }
+  if (msg.ellipsisValue === "any") {
+    node.characters = address[0];
+  }
 
   if (msg.ellipsisValue === "center") {
     node.characters = address[1] + "..." + address[2];
   }
 
   if (msg.ellipsisValue === "start") {
-    node.characters = "..." + makeid(msg.countValue, msg);
+    node.characters = "..." + address[0];
   }
 
   if (msg.ellipsisValue === "end") {
@@ -271,7 +274,9 @@ figma.ui.onmessage = (msg) => {
     const letterNode: TextNode = figma.createText();
     nodes.push(letterNode);
 
-    letterNode.characters = setCharacters(msg, letterNode, textToDisplay(msg));
+    let text = textToDisplay(msg);
+
+    letterNode.characters = setCharacters(msg, letterNode, text);
 
     letterNode.fontSize = 24;
     letterNode.fontName = { family: "Inter", style: "Regular" };
@@ -283,9 +288,11 @@ figma.ui.onmessage = (msg) => {
   }
 
   if (msg.type === "regenerate") {
+    console.log("regenerating now");
     for (let i = 0; i < allNodes.length; i++) {
       figma.loadFontAsync(allNodes[i].fontName);
-      let chars = setCharacters(msg, allNodes[i], textToDisplay(msg));
+      let text = textToDisplay(msg);
+      let chars = setCharacters(msg, allNodes[i], text[0]);
       allNodes[i].characters = chars;
     }
   }
