@@ -88,6 +88,7 @@ function App() {
       {
         pluginMessage: {
           type: "regenerate",
+          //could this just change the number of letters instead of regenerating?
           countValue,
           ellipsisValue,
           chainValue,
@@ -117,11 +118,53 @@ function App() {
   });
 
   let [createVisible, setCreateVisible] = useState(true);
+  let [regenerateVisible, setRegenerateVisible] = useState(false);
+  let [regenerateAllVisible, setRegenerateAllVisible] = useState(false);
+  let [deselectVisible, setDeselectVisible] = useState(false);
+
+  // 0 ellipsis,
+  // 1 numberOfCharacters,
+  // 2 node ? 1 : 0,
+  // 3 chain,
+  // 4 node ? node.type : 0,
+  // 5 selectedTextObjects.length,
+  // 6 selectedOtherObjects.length,
 
   onmessage = (event) => {
-    console.log(event.data[5]);
-    if (event[5] === true) {
+    console.log(event.data.pluginMessage[0], event.data.pluginMessage[3]);
+    ellipsisValue = event.data.pluginMessage[0];
+    chainValue = event.data.pluginMessage[3];
+
+    // which button to show
+    if (event.data.pluginMessage[6] > 0) {
       setCreateVisible(false);
+      setRegenerateVisible(false);
+      setRegenerateAllVisible(false);
+      setDeselectVisible(true);
+    }
+    if (event.data.pluginMessage[5] >= 2 && event.data.pluginMessage[6] === 0) {
+      setCreateVisible(false);
+      setRegenerateVisible(false);
+      setRegenerateAllVisible(true);
+      setDeselectVisible(false);
+    }
+    if (
+      event.data.pluginMessage[5] === 1 &&
+      event.data.pluginMessage[6] === 0
+    ) {
+      setCreateVisible(false);
+      setRegenerateVisible(true);
+      setRegenerateAllVisible(false);
+      setDeselectVisible(false);
+    }
+    if (
+      event.data.pluginMessage[5] === 0 &&
+      event.data.pluginMessage[6] === 0
+    ) {
+      setCreateVisible(true);
+      setRegenerateVisible(false);
+      setRegenerateAllVisible(false);
+      setDeselectVisible(false);
     }
   };
 
@@ -183,6 +226,7 @@ function App() {
           }}
         >
           <button
+            style={{ display: regenerateVisible ? "block" : "none" }}
             className="secondary"
             id="regenerate"
             onClick={() => regenerate()}
@@ -198,13 +242,15 @@ function App() {
             Create New
           </button>
           <button
-            className="primary"
+            style={{ display: regenerateAllVisible ? "block" : "none" }}
+            className="secondary"
             id="regenerate-all"
             onClick={() => regenerate()}
           >
             Regenerate All
           </button>
           <button
+            style={{ display: deselectVisible ? "block" : "none" }}
             className="secondary"
             id="deselect-non-text"
             onClick={deselectNonText}
