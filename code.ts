@@ -265,6 +265,7 @@ figma.on("run", () => {
 
 let prefix = "";
 figma.ui.onmessage = (msg) => {
+  console.log("create");
   if (msg.type === "create") {
     const nodes: TextNode[] = [];
 
@@ -272,7 +273,6 @@ figma.ui.onmessage = (msg) => {
     nodes.push(letterNode);
 
     let chars = setCharacters(msg, letterNode, textToDisplay(msg));
-
     letterNode.characters = chars;
 
     letterNode.fontSize = 24;
