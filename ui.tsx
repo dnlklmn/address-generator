@@ -116,6 +116,15 @@ function App() {
     );
   });
 
+  let [createVisible, setCreateVisible] = useState(true);
+
+  onmessage = (event) => {
+    console.log(event.data[5]);
+    if (event[5] === true) {
+      setCreateVisible(false);
+    }
+  };
+
   return (
     <div style={{ padding: 8 }}>
       <h2>Random Address Generatorrr</h2>
@@ -180,7 +189,12 @@ function App() {
           >
             Regenerate
           </button>
-          <button className="primary" id="create" onClick={() => create()}>
+          <button
+            style={{ display: createVisible ? "block" : "none" }}
+            className="primary"
+            id="create"
+            onClick={() => create()}
+          >
             Create New
           </button>
           <button
