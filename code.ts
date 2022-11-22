@@ -19,7 +19,6 @@ let selectedOtherObjects = [];
 
 figma.on("selectionchange", () => {
   allNodes = figma.currentPage.selection;
-  node = figma.currentPage.selection[0];
 
   selectedTextObjects = [];
   selectedOtherObjects = [];
@@ -90,23 +89,16 @@ figma.on("selectionchange", () => {
     } else {
       selectedOtherObjects.push(allNodes[i].type);
     }
-    // console.log(
-    //   "text objects selected:",
-    //   selectedTextObjects.length,
-    //   ", other objects selected:",
-    //   selectedOtherObjects.length
-    // );
+    figma.ui.postMessage([
+      ellipsis,
+      numberOfCharacters,
+      node ? 1 : 0,
+      chain,
+      node ? node.type : 0,
+      selectedTextObjects.length,
+      selectedOtherObjects.length,
+    ]);
   }
-
-  figma.ui.postMessage([
-    ellipsis,
-    numberOfCharacters,
-    node ? 1 : 0,
-    chain,
-    node ? node.type : 0,
-    selectedTextObjects.length,
-    selectedOtherObjects.length,
-  ]);
 });
 
 figma.on("run", () => {
@@ -189,6 +181,15 @@ figma.on("run", () => {
       ", other objects selected:",
       selectedOtherObjects.length
     );
+    figma.ui.postMessage([
+      ellipsis,
+      numberOfCharacters,
+      node ? 1 : 0,
+      chain,
+      node ? node.type : 0,
+      selectedTextObjects.length,
+      selectedOtherObjects.length,
+    ]);
   }
 
   figma.ui.postMessage([
@@ -211,8 +212,6 @@ figma.ui.onmessage = (msg) => {
     nodes.push(textNode);
 
     let text = textToDisplay(msg);
-
-    console.log("create-message:", msg);
 
     textNode.characters = setCharacters(msg, textNode, text);
 
@@ -239,6 +238,18 @@ figma.ui.onmessage = (msg) => {
       figma.loadFontAsync(allNodes[i].fontName);
       let chars = setCharacters(msg, allNodes[i], textToDisplay(msg));
       allNodes[i].characters = chars;
+    }
+  }
+
+  if (msg.type === "renumerate") {
+    for (let i = 0; i < allNodes.length; i++) {
+      figma.loadFontAsync(allNodes[i].fontName);
+      let currentChars = allNodes[i].characters;
+      if (msg.ellipsis === "center") {
+        allNodes[i].characters = currentChars.substring(
+          currentChars.length - msg.countValue
+        );
+      }
     }
   }
 

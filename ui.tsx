@@ -4,11 +4,14 @@ import * as ReactDOM from "react-dom";
 import "./ui.css";
 import { capitalizeFirstLetter } from "./helpers/helper";
 
-let ellipsisValue: string = "none";
-let chainValue: string = "any";
-
+let countValue = 24;
+function selectElement(id: any, valueToSelect: any) {
+  (document.getElementById(id) as HTMLInputElement).value = valueToSelect;
+}
 function App() {
-  let [countValue, setCountValue] = useState(24);
+  let [countDisplay, setCountDisplay] = useState(countValue);
+  let [chainValue, setChainValue] = useState("any");
+  let [ellipsisValue, setEllipsisValue] = useState();
 
   function create() {
     parent.postMessage(
@@ -38,6 +41,18 @@ function App() {
     );
   }
 
+  const handleFocus = (event: any) => event.target.select();
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    regenerate();
+    e.target.select();
+  };
+  const handleKeypress = (e: any) => {
+    if (e.keyCode === 13 || e.keyCode === 9) {
+      handleSubmit(e);
+    }
+  };
+
   function deselectNonText() {
     parent.postMessage(
       {
@@ -53,7 +68,7 @@ function App() {
   }
 
   function ellipsis(e: any) {
-    ellipsisValue = e.target.value;
+    setEllipsisValue(e.target.value);
     parent.postMessage(
       {
         pluginMessage: {
@@ -68,30 +83,14 @@ function App() {
   }
 
   function chain(e: any) {
-    chainValue = e.target.value;
+    setChainValue(e.target.value);
     parent.postMessage(
       {
         pluginMessage: {
           type: "regenerate",
+          chainValue,
           countValue,
           ellipsisValue,
-          chainValue,
-        },
-      },
-      "*"
-    );
-  }
-
-  function count(e: any) {
-    setCountValue(e.target.value);
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "regenerate",
-          //could this just change the number of letters instead of regenerating?
-          countValue,
-          ellipsisValue,
-          chainValue,
         },
       },
       "*"
@@ -131,9 +130,9 @@ function App() {
   // 6 selectedOtherObjects.length,
 
   onmessage = (event) => {
-    console.log(event.data.pluginMessage[0], event.data.pluginMessage[3]);
-    ellipsisValue = event.data.pluginMessage[0];
-    chainValue = event.data.pluginMessage[3];
+    setCountDisplay(event.data.pluginMessage[1]);
+    (document.getElementById("chain") as HTMLInputElement).value =
+      event.data.pluginMessage[3];
 
     // which button to show
     if (event.data.pluginMessage[6] > 0) {
@@ -184,8 +183,10 @@ function App() {
             <select
               name="ellipsis"
               id="ellipsis"
-              onChange={function e(e) {
+              onChange={function e(e: any) {
                 ellipsis(e);
+                setEllipsisValue(e.target.value);
+                console.log("i set you here");
               }}
             >
               {ellipsisList}
@@ -195,27 +196,70 @@ function App() {
         <div style={{ height: 16, width: 1 }}></div>
         <div>
           <label>Number of characters</label>
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", height: "auto" }}>
+            <button
+              style={{ width: "30%", marginTop: 4 }}
+              className="secondary"
+              id="regenerate"
+              onClick={function () {
+                countValue = countValue - 1;
+                setCountDisplay(countDisplay - 1);
+                parent.postMessage(
+                  {
+                    pluginMessage: {
+                      type: "regenerate",
+                      countValue,
+                      ellipsisValue,
+                      chainValue,
+                    },
+                  },
+                  "*"
+                );
+              }}
+            >
+              -
+            </button>
+            <div style={{ width: 24 }}></div>
             <input
               id="countNumber"
               type="number"
-              value={countValue}
+              value={countDisplay}
               step="2"
-              style={{ width: "33%" }}
-              onChange={(e) => count(e)}
+              style={{ width: "66%" }}
+              onKeyDown={handleKeypress}
+              onFocus={handleFocus}
+              onBlur={function (e) {
+                countValue = Number((e.target as HTMLInputElement).value);
+                setCountDisplay(Number((e.target as HTMLInputElement).value));
+              }}
+              onChange={function (e) {
+                countValue = Number((e.target as HTMLInputElement).value);
+                setCountDisplay(Number((e.target as HTMLInputElement).value));
+              }}
             />
-            <div style={{ width: 32 }}></div>
-            <input
-              className="range"
-              id="countRange"
-              type="range"
-              value={countValue}
-              step="2"
-              min="0"
-              max="48"
-              style={{ backgroundColor: "var(--figma-color-background)" }}
-              onChange={(e) => count(e)}
-            />
+            <div style={{ width: 24, height: "100%" }}></div>
+            <button
+              style={{ width: "30%", marginTop: 4 }}
+              className="secondary"
+              id="regenerate"
+              onClick={function () {
+                countValue = countValue + 1;
+                setCountDisplay(countDisplay + 1);
+                parent.postMessage(
+                  {
+                    pluginMessage: {
+                      type: "regenerate",
+                      countValue,
+                      ellipsisValue,
+                      chainValue,
+                    },
+                  },
+                  "*"
+                );
+              }}
+            >
+              +
+            </button>
           </div>
         </div>
         <div
@@ -229,7 +273,10 @@ function App() {
             style={{ display: regenerateVisible ? "block" : "none" }}
             className="secondary"
             id="regenerate"
-            onClick={() => regenerate()}
+            onClick={function () {
+              handleSubmit;
+              regenerate();
+            }}
           >
             Regenerate
           </button>
