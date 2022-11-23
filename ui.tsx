@@ -4,14 +4,13 @@ import * as ReactDOM from "react-dom";
 import "./ui.css";
 import { capitalizeFirstLetter } from "./helpers/helper";
 
-let countValue = 24;
-function selectElement(id: any, valueToSelect: any) {
-  (document.getElementById(id) as HTMLInputElement).value = valueToSelect;
-}
+let countValue: any = 24;
+
+let ellipsisValue: any = "none";
+
 function App() {
   let [countDisplay, setCountDisplay] = useState(countValue);
-  let [chainValue, setChainValue] = useState("any");
-  let [ellipsisValue, setEllipsisValue] = useState();
+  let [chainValue, setChainValue] = useState();
 
   function create() {
     parent.postMessage(
@@ -68,13 +67,13 @@ function App() {
   }
 
   function ellipsis(e: any) {
-    setEllipsisValue(e.target.value);
+    ellipsisValue = e.target.value;
     parent.postMessage(
       {
         pluginMessage: {
           type: "regenerate",
-          countValue,
           ellipsisValue,
+          countValue,
           chainValue,
         },
       },
@@ -133,6 +132,9 @@ function App() {
     setCountDisplay(event.data.pluginMessage[1]);
     (document.getElementById("chain") as HTMLInputElement).value =
       event.data.pluginMessage[3];
+    (document.getElementById("ellipsis") as HTMLInputElement).value =
+      event.data.pluginMessage[0];
+    setChainValue(event.data.pluginMessage[3]);
 
     // which button to show
     if (event.data.pluginMessage[6] > 0) {
@@ -167,6 +169,23 @@ function App() {
     }
   };
 
+  const selectEll = (
+    <select
+      name="ellipsis"
+      id="ellipsis"
+      onChange={function e(e: any) {
+        ellipsis(e);
+      }}
+    >
+      {ellipsisList}
+    </select>
+  );
+  const selectChain = (
+    <select name="chain" id="chain" onChange={(e) => chain(e)}>
+      {chainList}
+    </select>
+  );
+
   return (
     <div style={{ padding: 8 }}>
       <h2>Random Address Generatorrr</h2>
@@ -174,23 +193,11 @@ function App() {
         <div className="flex-horizontal">
           <div className="select-wrapper">
             <label htmlFor="chain">Chain</label>
-            <select name="chain" id="chain" onChange={(e) => chain(e)}>
-              {chainList}
-            </select>
+            {selectChain}
           </div>
           <div className="select-wrapper">
             <label htmlFor="ellipsis">Ellipsis</label>
-            <select
-              name="ellipsis"
-              id="ellipsis"
-              onChange={function e(e: any) {
-                ellipsis(e);
-                setEllipsisValue(e.target.value);
-                console.log("i set you here");
-              }}
-            >
-              {ellipsisList}
-            </select>
+            {selectEll}
           </div>
         </div>
         <div style={{ height: 16, width: 1 }}></div>

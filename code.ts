@@ -175,21 +175,6 @@ figma.on("run", () => {
     } else {
       selectedOtherObjects.push(allNodes[i].type);
     }
-    console.log(
-      "text objects selected:",
-      selectedTextObjects.length,
-      ", other objects selected:",
-      selectedOtherObjects.length
-    );
-    figma.ui.postMessage([
-      ellipsis,
-      numberOfCharacters,
-      node ? 1 : 0,
-      chain,
-      node ? node.type : 0,
-      selectedTextObjects.length,
-      selectedOtherObjects.length,
-    ]);
   }
 
   figma.ui.postMessage([
@@ -225,6 +210,7 @@ figma.ui.onmessage = (msg) => {
   }
 
   if (msg.type === "regenerate") {
+    console.log("chain, ell", msg.chainValue, msg.ellipsisValue);
     for (let i = 0; i < allNodes.length; i++) {
       figma.loadFontAsync(allNodes[i].fontName);
       let text = textToDisplay(msg);
