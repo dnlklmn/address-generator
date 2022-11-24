@@ -1,107 +1,30 @@
 import * as React from "react";
 import { useState, useRef } from "react";
-import * as ReactDOM from "react-dom";
+import * as ReactDOM from "react-dom/client";
 import "./ui.css";
 import { capitalizeFirstLetter } from "./helpers/helper";
+import { count } from "console";
 
-let countValue: any = 24;
-
-let ellipsisValue: any = "none";
+let currentChain = "any";
+let currentEllipsis = "none";
+let currentCount = 24;
 
 function App() {
-  let [countDisplay, setCountDisplay] = useState(countValue);
-  let [chainValue, setChainValue] = useState();
-
-  function create() {
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "create",
-          countValue,
-          ellipsisValue,
-          chainValue,
-        },
-      },
-      "*"
-    );
-  }
-
-  function regenerate() {
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "regenerate",
-          countValue,
-          ellipsisValue,
-          chainValue,
-        },
-      },
-      "*"
-    );
-  }
-
   const handleFocus = (event: any) => event.target.select();
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    regenerate();
-    e.target.select();
-  };
+  const handleSubmit = () => {};
   const handleKeypress = (e: any) => {
     if (e.keyCode === 13 || e.keyCode === 9) {
-      handleSubmit(e);
+      handleSubmit();
     }
   };
 
-  function deselectNonText() {
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "deselect-non-text",
-          countValue,
-          ellipsisValue,
-          chainValue,
-        },
-      },
-      "*"
-    );
-  }
-
-  function ellipsis(e: any) {
-    ellipsisValue = e.target.value;
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "regenerate",
-          ellipsisValue,
-          countValue,
-          chainValue,
-        },
-      },
-      "*"
-    );
-  }
-
-  function chain(e: any) {
-    setChainValue(e.target.value);
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "regenerate",
-          chainValue,
-          countValue,
-          ellipsisValue,
-        },
-      },
-      "*"
-    );
-  }
-
+  //dropdown items
   const chainOptions: string[] = ["any", "polkadot", "ethereum", "kusama"];
   const ellipsisOptions: string[] = ["none", "start", "center", "end"];
 
   let chainList = chainOptions.map((network, i) => {
     return (
-      <option key={i * Math.random()} value={network.toString()}>
+      <option value={network} key={i * Math.random()}>
         {capitalizeFirstLetter(network)}
       </option>
     );
@@ -109,81 +32,152 @@ function App() {
 
   let ellipsisList = ellipsisOptions.map((location, i) => {
     return (
-      <option key={i * Math.random()} value={location.toString()}>
+      <option value={location} key={i * Math.random()}>
         {capitalizeFirstLetter(location)}
       </option>
     );
   });
 
+  let [countDisplay, setCountdisplay] = useState(currentCount);
+  let [buttonCreate, setButtonCreate] = useState("create");
   let [createVisible, setCreateVisible] = useState(true);
-  let [regenerateVisible, setRegenerateVisible] = useState(false);
-  let [regenerateAllVisible, setRegenerateAllVisible] = useState(false);
-  let [deselectVisible, setDeselectVisible] = useState(false);
 
-  // 0 ellipsis,
-  // 1 numberOfCharacters,
-  // 2 node ? 1 : 0,
-  // 3 chain,
-  // 4 node ? node.type : 0,
-  // 5 selectedTextObjects.length,
-  // 6 selectedOtherObjects.length,
+  // update dropdowns  - used on incoming message
+  function selectElement(id: any, valueToSelect: any) {
+    (document.getElementById(id) as HTMLInputElement).value = valueToSelect;
+  }
 
+  // 0 firstLetter
+  // 1 numberOfObjectsSelected
+  // 2 selectedTextObjects,
+  // 3 selectedOtherObjects,
+  // 4 ellipsis,
+  // 5 numberOfCharacters,
+
+  // on incoming message
   onmessage = (event) => {
-    setCountDisplay(event.data.pluginMessage[1]);
-    (document.getElementById("chain") as HTMLInputElement).value =
-      event.data.pluginMessage[3];
-    (document.getElementById("ellipsis") as HTMLInputElement).value =
-      event.data.pluginMessage[0];
-    setChainValue(event.data.pluginMessage[3]);
+    // check prefixes
+    currentCount = event.data.pluginMessage.numberOfCharacters;
+    setCountdisplay(event.data.pluginMessage.numberOfCharacters);
 
-    // which button to show
-    if (event.data.pluginMessage[6] > 0) {
-      setCreateVisible(false);
-      setRegenerateVisible(false);
-      setRegenerateAllVisible(false);
-      setDeselectVisible(true);
+    // set dropdowns
+    currentEllipsis = event.data.pluginMessage.ellipsis;
+    currentChain = event.data.pluginMessage.chain;
+
+    // set button visibility
+    if (event.data.pluginMessage.numberOfObjectsSelected > 0) {
+      setButtonCreate("regenerate");
     }
-    if (event.data.pluginMessage[5] >= 2 && event.data.pluginMessage[6] === 0) {
-      setCreateVisible(false);
-      setRegenerateVisible(false);
-      setRegenerateAllVisible(true);
-      setDeselectVisible(false);
+    if (event.data.pluginMessage.numberOfObjectsSelected === 0) {
+      setButtonCreate("create");
+      currentChain = "any";
+      currentEllipsis = "none";
     }
-    if (
-      event.data.pluginMessage[5] === 1 &&
-      event.data.pluginMessage[6] === 0
-    ) {
+    if (event.data.pluginMessage.selectedOtherObjects.length > 0) {
       setCreateVisible(false);
-      setRegenerateVisible(true);
-      setRegenerateAllVisible(false);
-      setDeselectVisible(false);
     }
-    if (
-      event.data.pluginMessage[5] === 0 &&
-      event.data.pluginMessage[6] === 0
-    ) {
+    if (event.data.pluginMessage.selectedOtherObjects.length === 0) {
       setCreateVisible(true);
-      setRegenerateVisible(false);
-      setRegenerateAllVisible(false);
-      setDeselectVisible(false);
     }
+
+    selectElement("chain", currentChain);
+    selectElement("ellipsis", currentEllipsis);
   };
 
-  const selectEll = (
-    <select
-      name="ellipsis"
-      id="ellipsis"
-      onChange={function e(e: any) {
-        ellipsis(e);
+  // buttons
+  const CreateButton = () => (
+    <button
+      className="primary"
+      id="create"
+      onClick={() => {
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: buttonCreate === "create" ? "create" : "regenerate",
+              currentChain: currentChain,
+              currentEllipsis: currentEllipsis,
+              currentCount: currentCount,
+            },
+          },
+          "*"
+        );
       }}
     >
-      {ellipsisList}
-    </select>
+      {buttonCreate === "create" ? "Create New" : "Regenerate"}
+    </button>
   );
-  const selectChain = (
-    <select name="chain" id="chain" onChange={(e) => chain(e)}>
-      {chainList}
-    </select>
+
+  const DeselectButton = () => (
+    <button
+      className="secondary"
+      id="deselect-non-text"
+      onClick={() => {
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "deselect-non-text",
+              currentChain: currentChain,
+              currentEllipsis: currentEllipsis,
+              currentCount: currentCount,
+            },
+          },
+          "*"
+        );
+      }}
+    >
+      Deselect Non-Text Objects
+    </button>
+  );
+
+  // dropdowns should not rerender on state update (changing # of characters)
+  const chainDropdown = React.useMemo(
+    () => (
+      <select
+        id="chain"
+        onChange={function () {
+          currentChain = (event.target as HTMLInputElement).value;
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: "regenerate",
+                currentChain: currentChain,
+                currentEllipsis: currentEllipsis,
+                currentCount: currentCount,
+              },
+            },
+            "*"
+          );
+        }}
+      >
+        {chainList}
+      </select>
+    ),
+    []
+  );
+
+  const ellipsisDropdown = React.useMemo(
+    () => (
+      <select
+        id="ellipsis"
+        onChange={function () {
+          currentEllipsis = (event.target as HTMLInputElement).value;
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: "regenerate",
+                currentChain: currentChain,
+                currentEllipsis: currentEllipsis,
+                currentCount: currentCount,
+              },
+            },
+            "*"
+          );
+        }}
+      >
+        {ellipsisList}
+      </select>
+    ),
+    []
   );
 
   return (
@@ -193,11 +187,11 @@ function App() {
         <div className="flex-horizontal">
           <div className="select-wrapper">
             <label htmlFor="chain">Chain</label>
-            {selectChain}
+            {chainDropdown}
           </div>
           <div className="select-wrapper">
             <label htmlFor="ellipsis">Ellipsis</label>
-            {selectEll}
+            {ellipsisDropdown}
           </div>
         </div>
         <div style={{ height: 16, width: 1 }}></div>
@@ -207,17 +201,16 @@ function App() {
             <button
               style={{ width: "30%", marginTop: 4 }}
               className="secondary"
-              id="regenerate"
               onClick={function () {
-                countValue = countValue - 1;
-                setCountDisplay(countDisplay - 1);
+                currentCount = currentCount - 2;
+                setCountdisplay(countDisplay - 2);
                 parent.postMessage(
                   {
                     pluginMessage: {
                       type: "regenerate",
-                      countValue,
-                      ellipsisValue,
-                      chainValue,
+                      currentChain: currentChain,
+                      currentEllipsis: currentEllipsis,
+                      currentCount: currentCount,
                     },
                   },
                   "*"
@@ -230,35 +223,33 @@ function App() {
             <input
               id="countNumber"
               type="number"
-              value={countDisplay}
               step="2"
               style={{ width: "66%" }}
+              value={countDisplay}
               onKeyDown={handleKeypress}
               onFocus={handleFocus}
-              onBlur={function (e) {
-                countValue = Number((e.target as HTMLInputElement).value);
-                setCountDisplay(Number((e.target as HTMLInputElement).value));
-              }}
-              onChange={function (e) {
-                countValue = Number((e.target as HTMLInputElement).value);
-                setCountDisplay(Number((e.target as HTMLInputElement).value));
+              onChange={function () {
+                currentCount = Number((event.target as HTMLInputElement).value);
+                setCountdisplay(
+                  Number((event.target as HTMLInputElement).value)
+                );
               }}
             />
             <div style={{ width: 24, height: "100%" }}></div>
             <button
               style={{ width: "30%", marginTop: 4 }}
               className="secondary"
-              id="regenerate"
               onClick={function () {
-                countValue = countValue + 1;
-                setCountDisplay(countDisplay + 1);
+                currentCount = currentCount + 2;
+                console.log("current", currentCount);
+                setCountdisplay(countDisplay + 2);
                 parent.postMessage(
                   {
                     pluginMessage: {
                       type: "regenerate",
-                      countValue,
-                      ellipsisValue,
-                      chainValue,
+                      currentChain: currentChain,
+                      currentEllipsis: currentEllipsis,
+                      currentCount: currentCount,
                     },
                   },
                   "*"
@@ -276,45 +267,16 @@ function App() {
             alignContent: "space-between",
           }}
         >
-          <button
-            style={{ display: regenerateVisible ? "block" : "none" }}
-            className="secondary"
-            id="regenerate"
-            onClick={function () {
-              handleSubmit;
-              regenerate();
-            }}
-          >
-            Regenerate
-          </button>
-          <button
-            style={{ display: createVisible ? "block" : "none" }}
-            className="primary"
-            id="create"
-            onClick={() => create()}
-          >
-            Create New
-          </button>
-          <button
-            style={{ display: regenerateAllVisible ? "block" : "none" }}
-            className="secondary"
-            id="regenerate-all"
-            onClick={() => regenerate()}
-          >
-            Regenerate All
-          </button>
-          <button
-            style={{ display: deselectVisible ? "block" : "none" }}
-            className="secondary"
-            id="deselect-non-text"
-            onClick={deselectNonText}
-          >
-            Deselect Non-Text Objects
-          </button>
+          {createVisible ? <CreateButton /> : <DeselectButton />}
         </div>
       </div>
     </div>
   );
 }
 
-ReactDOM.render(<App />, document.getElementById("react-page"));
+const root = ReactDOM.createRoot(document.getElementById("react-page"));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
