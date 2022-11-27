@@ -1,4 +1,4 @@
-import { createAddress, addressFormatted } from "./helpers/helper";
+import { createAddress, addressFormatted } from "./helper";
 
 figma.showUI(__html__, {
   themeColors: true,

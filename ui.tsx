@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import * as ReactDOM from "react-dom/client";
 import "./ui.css";
-import { capitalizeFirstLetter } from "./helpers/helper";
+import { capitalizeFirstLetter } from "./helper";
 import { GitHubIcon, AddIcon, MinusIcon } from "./components/icons";
 
 let currentChain = "any";
@@ -268,7 +268,7 @@ function App() {
         </div>
       </div>
       {createVisible ? <CreateButton /> : <DeselectButton />}
-      <div className="flex-horizontal gap-min">
+      <div className="flex-horizontal gap-min" style={{ marginTop: 8 }}>
         <GitHubIcon fill="var(--figma-color-text-brand)" size={16} />
         <a
           href="https://github.com/dnlklmn/address-generator/issues/new"
