@@ -270,7 +270,10 @@ function App() {
       {createVisible ? <CreateButton /> : <DeselectButton />}
       <div className="flex-horizontal gap-min">
         <GitHubIcon fill="var(--figma-color-text-brand)" size={16} />
-        <a href="https://github.com/dnlklmn/address-generator" target="_blank">
+        <a
+          href="https://github.com/dnlklmn/address-generator/issues/new"
+          target="_blank"
+        >
           Feedback & Wishes
         </a>
       </div>
