@@ -16,27 +16,45 @@
     background-position: 0% 50%;
   }
 } */
+.page {
+  padding: 4px;
+}
 h2 {
   color: var(--figma-color-text);
   /* color: white; */
   font-family: "Inter";
-  font-weight: 400;
+  font-weight: 600;
   font-size: 120%;
-  margin-top: 0;
+  line-height: 100%;
+  margin: 0;
 }
 label {
   color: var(--figma-color-text-tertiary);
   font-family: "Inter";
   font-weight: 500;
   text-transform: capitalize;
-  font-size: 60%;
+  font-size: 75%;
 }
+a {
+  color: var(--figma-color-text-brand);
+  font-family: "Inter";
+  font-weight: 500;
+  text-transform: capitalize;
+  font-size: 75%;
+}
+
+icon {
+  font-family: "Material Icons";
+  font-size: 75%;
+}
+
 select {
   cursor: pointer;
   background-color: var(--figma-color-bg-secondary);
+  border: 2px solid var(--figma-color-bg-tertiary);
   color: var(--figma-color-text);
   appearance: none;
-  margin-top: 4px;
+  margin-top: 8px;
   padding: 16px 12px;
   width: 100%;
   border-radius: 4px;
@@ -47,8 +65,11 @@ select {
 }
 select:focus {
   background-color: var(--figma-color-bg-secondary);
-  box-shadow: inset 0 0 0 2px #24cc85;
+  box-shadow: inset 0 0 0 2px var(--figma-color-border-brand);
   border: 0;
+}
+select:hover {
+  background-color: var(--figma-color-bg-tertiary);
 }
 option {
   font-family: "Inter";
@@ -68,13 +89,17 @@ input {
   outline: none;
   border: 0;
   color: var(--figma-color-text);
-  background-color: var(--figma-color-bg-secondary);
+  background-color: var(--figma-color-bg-hover);
   box-shadow: inset 0 0 0 1px var(--figma-color-bg-tertiary);
+}
+
+input:hover {
+  background-color: var(--figma-color-bg-tertiary);
 }
 
 input:focus {
   border: 0;
-  box-shadow: inset 0 0 0 2px #24cc85;
+  box-shadow: inset 0 0 0 2px var(--figma-color-border-brand);
 }
 
 input::-webkit-outer-spin-button,
@@ -85,7 +110,6 @@ input::-webkit-inner-spin-button {
 button {
   cursor: pointer;
   border-width: 0;
-  margin-top: 32px;
   padding: 8px;
   width: 100%;
   border-radius: 4px;
@@ -99,24 +123,24 @@ button {
   outline: none;
 }
 button.primary {
-  background-color: #24cc85;
-  border: 2px solid #24cc85;
+  background-color: var(--figma-color-bg-brand);
+  border: 2px solid var(--figma-color-bg-brand);
   color: #fff;
 }
 button.primary:hover {
-  background-color: #23c580;
-  border: 2px solid #23c580;
+  background-color: var(--figma-color-bg-brand-hover);
+  border: 2px solid var(--figma-color-bg-brand-hover);
   box-shadow: 0 3px 3px #30303030;
 }
 button.secondary {
   border: 0;
-  background-color: var(--figma-color-bg);
-  border: 2px solid #24cc85;
+  background-color: var(--figma-color-bg-secondary);
+  border: 2px solid var(--figma-color-bg-tertiary);
   color: #24cc85;
   box-shadow: 0 4px 4px #30303000;
 }
 button.secondary:hover {
-  background-color: var(--figma-color-bg-selected);
+  background-color: var(--figma-color-bg-tertiary);
   box-shadow: 0 4px 4px #30303000;
 }
 button.secondary:disabled {
@@ -134,13 +158,13 @@ button.secondary:disabled {
 }
 .select-wrapper::after {
   content: "expand_more";
-  top: 26px;
+  top: 38px;
   right: 16px;
   position: absolute;
   font-family: "Material Icons";
   font-weight: normal;
   font-style: normal;
-  font-size: 24px; /* Preferred icon size */
+  font-size: 16px; /* Preferred icon size */
   display: inline-block;
   line-height: 1;
   text-transform: none;
@@ -154,8 +178,29 @@ button.secondary:disabled {
 .flex-horizontal {
   display: flex;
   flex-direction: row;
+  justify-content: "start";
+}
+
+.justify-sb {
   justify-content: space-between;
 }
+
+.flex-vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.gap-min {
+  gap: 8px;
+}
+.gap-small {
+  gap: 16px;
+}
+.gap-default {
+  gap: 24px;
+}
+
 .form {
   font-family: "Inter";
   font-weight: 500;
@@ -163,6 +208,7 @@ button.secondary:disabled {
   font-size: 16px;
   letter-spacing: 0.3;
   padding: 0;
+  margin-top: 0;
 }
 .range {
   box-shadow: inset 0 0 0 0px #32323200;

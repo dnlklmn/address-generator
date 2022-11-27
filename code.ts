@@ -1,11 +1,12 @@
-import { textToDisplay } from "./helpers/helper";
-// import { setCharacters } from "./helpers/helper";
-import { createAddress } from "./helpers/helper";
-import { addressFormatted } from "./helpers/helper";
+import { createAddress, addressFormatted } from "./helpers/helper";
 
-figma.showUI(__html__, { themeColors: true, width: 340, height: 300 });
+figma.showUI(__html__, {
+  themeColors: true,
+  width: 340,
+  height: 300,
+  title: "Random Web3 Address Generator",
+});
 
-let node: any = figma.currentPage.selection[0];
 let allNodes: any = figma.currentPage.selection;
 let newSelection: any = [];
 
@@ -18,9 +19,7 @@ let numberOfCharacters = 24;
 let selectedTextObjects = [];
 let selectedOtherObjects = [];
 
-function trackSelection() {}
-
-figma.on("selectionchange", () => {
+function trackSelection() {
   allNodes = figma.currentPage.selection;
 
   selectedTextObjects = [];
@@ -31,6 +30,8 @@ figma.on("selectionchange", () => {
   let numberOfObjectsSelected: number = allNodes.length;
 
   for (let i = 0; i < allNodes.length; i++) {
+    numberOfCharacters = allNodes[i].characters.length;
+
     if (allNodes.length === 1 && allNodes[i].type == "TEXT") {
       firstLetters = allNodes[i].characters.substring(0, 2);
       numberOfCharacters = allNodes[i].characters.length;
@@ -41,17 +42,17 @@ figma.on("selectionchange", () => {
 
       if (!allNodes[i].characters.includes("...")) {
         ellipsis = "none";
-        numberOfCharacters = allNodes[i].characters.length - 3;
+        numberOfCharacters = allNodes[i].characters.length;
       }
 
       if (allNodes[i].characters.startsWith("...")) {
         ellipsis = "start";
-        numberOfCharacters = allNodes[i].characters.length - 3;
+        numberOfCharacters = allNodes[i].characters.length;
       }
 
       if (allNodes[i].characters.endsWith("...")) {
         ellipsis = "end";
-        numberOfCharacters = allNodes[i].characters.length - 3;
+        numberOfCharacters = allNodes[i].characters.length;
       }
 
       if (
@@ -60,7 +61,7 @@ figma.on("selectionchange", () => {
         !allNodes[i].characters.startsWith("...")
       ) {
         ellipsis = "center";
-        numberOfCharacters = allNodes[i].characters.length - 3;
+        numberOfCharacters = allNodes[i].characters.length;
       }
 
       if (
@@ -100,69 +101,21 @@ figma.on("selectionchange", () => {
     chain,
     numberOfCharacters,
   });
+}
+
+figma.on("selectionchange", () => {
+  trackSelection();
 });
 
 figma.on("run", () => {
-  allNodes = figma.currentPage.selection;
-
-  selectedTextObjects = [];
-  selectedOtherObjects = [];
-  newSelection = [];
-
-  let firstLetters: string = "";
-  let numberOfObjectsSelected: number = allNodes.length;
-
-  for (let i = 0; i < allNodes.length; i++) {
-    if (allNodes.length === 1 && allNodes[i].type == "TEXT") {
-      firstLetters = allNodes[i].characters.substring(0, 2);
-      numberOfCharacters = allNodes[i].characters.length;
-    }
-
-    if (allNodes[i] && allNodes[i].type == "TEXT") {
-      figma.loadFontAsync(allNodes[i].fontName);
-
-      if (!allNodes[i].characters.includes("...")) {
-        ellipsis = "none";
-        numberOfCharacters = allNodes[i].characters.length - 3;
-      }
-
-      if (allNodes[i].characters.startsWith("...")) {
-        ellipsis = "start";
-        numberOfCharacters = allNodes[i].characters.length - 3;
-      }
-
-      if (allNodes[i].characters.endsWith("...")) {
-        ellipsis = "end";
-        numberOfCharacters = allNodes[i].characters.length - 3;
-      }
-
-      if (
-        allNodes[i].characters.includes("...") &&
-        !allNodes[i].characters.endsWith("...") &&
-        !allNodes[i].characters.startsWith("...")
-      ) {
-        ellipsis = "center";
-        numberOfCharacters = allNodes[i].characters.length - 3;
-      }
-
-      selectedTextObjects.push(allNodes[i].type);
-    } else {
-      selectedOtherObjects.push(allNodes[i].type);
-    }
-  }
-  figma.ui.postMessage({
-    firstLetters,
-    numberOfObjectsSelected,
-    selectedTextObjects,
-    selectedOtherObjects,
-    ellipsis,
-    numberOfCharacters,
-  });
+  trackSelection();
 });
 
 //Message from UI
 let prefix = "";
 figma.ui.onmessage = (msg) => {
+  numberOfCharacters = msg.currentCount;
+
   if (msg.type === "create") {
     const nodes: TextNode[] = [];
     const textNode: TextNode = figma.createText();
@@ -182,33 +135,11 @@ figma.ui.onmessage = (msg) => {
   if (msg.type === "regenerate") {
     for (let i = 0; i < allNodes.length; i++) {
       figma.loadFontAsync(allNodes[i].fontName);
-
       let text = createAddress(msg);
       let textChopped = addressFormatted(text, msg);
       allNodes[i].characters = textChopped;
     }
   }
-
-  // if (msg.type === "regenerate-all") {
-  //   for (let i = 0; i < allNodes.length; i++) {
-  //     figma.loadFontAsync(allNodes[i].fontName);
-  //     let chars = setCharacters(msg, allNodes[i], textToDisplay(msg));
-  //     allNodes[i].characters = chars;
-  //   }
-  // }
-
-  // if (msg.type === "renumerate") {
-  //   for (let i = 0; i < allNodes.length; i++) {
-  //     figma.loadFontAsync(allNodes[i].fontName);
-  //     let currentChars = allNodes[i].characters;
-  //     if (msg.ellipsis === "center") {
-  //       allNodes[i].characters = currentChars.substring(
-  //         currentChars.length - msg.countValue
-  //       );
-  //     }
-  //   }
-  // }
-
   if (msg.type === "deselect-non-text") {
     for (let i = 0; i < allNodes.length; i++) {
       if (allNodes[i].type === "TEXT") {

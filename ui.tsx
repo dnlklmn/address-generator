@@ -1,9 +1,9 @@
 import * as React from "react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import * as ReactDOM from "react-dom/client";
 import "./ui.css";
 import { capitalizeFirstLetter } from "./helpers/helper";
-import { count } from "console";
+import { GitHubIcon, AddIcon, MinusIcon } from "./components/icons";
 
 let currentChain = "any";
 let currentEllipsis = "none";
@@ -11,10 +11,19 @@ let currentCount = 24;
 
 function App() {
   const handleFocus = (event: any) => event.target.select();
-  const handleSubmit = () => {};
   const handleKeypress = (e: any) => {
     if (e.keyCode === 13 || e.keyCode === 9) {
-      handleSubmit();
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: buttonCreate === "create" ? "create" : "regenerate",
+            currentChain: currentChain,
+            currentEllipsis: currentEllipsis,
+            currentCount: currentCount,
+          },
+        },
+        "*"
+      );
     }
   };
 
@@ -56,7 +65,6 @@ function App() {
 
   // on incoming message
   onmessage = (event) => {
-    // check prefixes
     currentCount = event.data.pluginMessage.numberOfCharacters;
     setCountdisplay(event.data.pluginMessage.numberOfCharacters);
 
@@ -82,6 +90,7 @@ function App() {
 
     selectElement("chain", currentChain);
     selectElement("ellipsis", currentEllipsis);
+    selectElement("countNumber", currentCount);
   };
 
   // buttons
@@ -181,10 +190,9 @@ function App() {
   );
 
   return (
-    <div style={{ padding: 8 }}>
-      <h2>Random Address Generatorrr</h2>
-      <div className="form">
-        <div className="flex-horizontal">
+    <div className="page flex-vertical gap-default">
+      <div className="form flex-vertical gap-small">
+        <div className="flex-horizontal gap-small">
           <div className="select-wrapper">
             <label htmlFor="chain">Chain</label>
             {chainDropdown}
@@ -194,10 +202,9 @@ function App() {
             {ellipsisDropdown}
           </div>
         </div>
-        <div style={{ height: 16, width: 1 }}></div>
         <div>
           <label>Number of characters</label>
-          <div style={{ display: "flex", height: "auto" }}>
+          <div style={{ display: "flex", height: "auto", marginTop: 4 }}>
             <button
               style={{ width: "30%", marginTop: 4 }}
               className="secondary"
@@ -217,7 +224,7 @@ function App() {
                 );
               }}
             >
-              -
+              <MinusIcon fill="var(--figma-color-text-secondary)" size={16} />
             </button>
             <div style={{ width: 24 }}></div>
             <input
@@ -241,7 +248,6 @@ function App() {
               className="secondary"
               onClick={function () {
                 currentCount = currentCount + 2;
-                console.log("current", currentCount);
                 setCountdisplay(countDisplay + 2);
                 parent.postMessage(
                   {
@@ -256,19 +262,17 @@ function App() {
                 );
               }}
             >
-              +
+              <AddIcon fill="var(--figma-color-text-secondary)" size={16} />
             </button>
           </div>
         </div>
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            alignContent: "space-between",
-          }}
-        >
-          {createVisible ? <CreateButton /> : <DeselectButton />}
-        </div>
+      </div>
+      {createVisible ? <CreateButton /> : <DeselectButton />}
+      <div className="flex-horizontal gap-min">
+        <GitHubIcon fill="var(--figma-color-text-brand)" size={16} />
+        <a href="https://github.com/dnlklmn/address-generator" target="_blank">
+          Feedback & Wishes
+        </a>
       </div>
     </div>
   );
