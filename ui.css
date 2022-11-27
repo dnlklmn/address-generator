@@ -89,12 +89,12 @@ input {
   outline: none;
   border: 0;
   color: var(--figma-color-text);
-  background-color: var(--figma-color-bg-hover);
+  background-color: var(--figma-color-bg);
   box-shadow: inset 0 0 0 1px var(--figma-color-bg-tertiary);
 }
 
 input:hover {
-  background-color: var(--figma-color-bg-tertiary);
+  background-color: var(--figma-color-bg-secondary);
 }
 
 input:focus {
@@ -119,7 +119,6 @@ button {
   text-transform: capitalize;
   font-size: 16px;
   letter-spacing: 0.3;
-  box-shadow: 0 4px 4px #30303020;
   outline: none;
 }
 button.primary {
@@ -130,14 +129,11 @@ button.primary {
 button.primary:hover {
   background-color: var(--figma-color-bg-brand-hover);
   border: 2px solid var(--figma-color-bg-brand-hover);
-  box-shadow: 0 3px 3px #30303030;
 }
 button.secondary {
   border: 0;
   background-color: var(--figma-color-bg-secondary);
-  border: 2px solid var(--figma-color-bg-tertiary);
-  color: #24cc85;
-  box-shadow: 0 4px 4px #30303000;
+  box-shadow: inset 0 0 0 1px var(--figma-color-bg-tertiary);
 }
 button.secondary:hover {
   background-color: var(--figma-color-bg-tertiary);
