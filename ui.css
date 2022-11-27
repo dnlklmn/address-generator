@@ -1,0 +1,220 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+/* body {
+  background: linear-gradient(-45deg, #e6007a, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 12s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+} */
+.page {
+  padding: 4px;
+}
+h2 {
+  color: var(--figma-color-text);
+  /* color: white; */
+  font-family: "Inter";
+  font-weight: 600;
+  font-size: 120%;
+  line-height: 100%;
+  margin: 0;
+}
+label {
+  color: var(--figma-color-text-tertiary);
+  font-family: "Inter";
+  font-weight: 500;
+  text-transform: capitalize;
+  font-size: 75%;
+}
+a {
+  color: var(--figma-color-text-brand);
+  font-family: "Inter";
+  font-weight: 500;
+  text-transform: capitalize;
+  font-size: 75%;
+}
+
+icon {
+  font-family: "Material Icons";
+  font-size: 75%;
+}
+
+select {
+  cursor: pointer;
+  background-color: var(--figma-color-bg-secondary);
+  border: 2px solid var(--figma-color-bg-tertiary);
+  color: var(--figma-color-text);
+  appearance: none;
+  margin-top: 8px;
+  padding: 16px 12px;
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px var(--figma-color-bg-tertiary);
+  border: 0;
+  stroke: 0;
+  outline: none;
+}
+select:focus {
+  background-color: var(--figma-color-bg-secondary);
+  box-shadow: inset 0 0 0 2px var(--figma-color-border-brand);
+  border: 0;
+}
+select:hover {
+  background-color: var(--figma-color-bg-tertiary);
+}
+option {
+  font-family: "Inter";
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 120%;
+  border: 0;
+  box-shadow: inset 0 0 0 1px #32323220;
+}
+input {
+  cursor: pointer;
+  margin-top: 4px;
+  padding: 16px 12px;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  outline: none;
+  border: 0;
+  color: var(--figma-color-text);
+  background-color: var(--figma-color-bg-hover);
+  box-shadow: inset 0 0 0 1px var(--figma-color-bg-tertiary);
+}
+
+input:hover {
+  background-color: var(--figma-color-bg-tertiary);
+}
+
+input:focus {
+  border: 0;
+  box-shadow: inset 0 0 0 2px var(--figma-color-border-brand);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+button {
+  cursor: pointer;
+  border-width: 0;
+  padding: 8px;
+  width: 100%;
+  border-radius: 4px;
+  font-family: "Inter";
+  font-weight: 500;
+  line-height: 28px;
+  text-transform: capitalize;
+  font-size: 16px;
+  letter-spacing: 0.3;
+  box-shadow: 0 4px 4px #30303020;
+  outline: none;
+}
+button.primary {
+  background-color: var(--figma-color-bg-brand);
+  border: 2px solid var(--figma-color-bg-brand);
+  color: #fff;
+}
+button.primary:hover {
+  background-color: var(--figma-color-bg-brand-hover);
+  border: 2px solid var(--figma-color-bg-brand-hover);
+  box-shadow: 0 3px 3px #30303030;
+}
+button.secondary {
+  border: 0;
+  background-color: var(--figma-color-bg-secondary);
+  border: 2px solid var(--figma-color-bg-tertiary);
+  color: #24cc85;
+  box-shadow: 0 4px 4px #30303000;
+}
+button.secondary:hover {
+  background-color: var(--figma-color-bg-tertiary);
+  box-shadow: 0 4px 4px #30303000;
+}
+button.secondary:disabled {
+  border: 0;
+  opacity: 0.5;
+  background-color: #fff;
+  border: 2px solid #24cc85;
+  color: #24cc85;
+  box-shadow: 0 4px 4px #30303000;
+}
+
+.select-wrapper {
+  position: relative;
+  width: 48%;
+}
+.select-wrapper::after {
+  content: "expand_more";
+  top: 38px;
+  right: 16px;
+  position: absolute;
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 16px; /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--figma-color-text-secondary);
+}
+
+.flex-horizontal {
+  display: flex;
+  flex-direction: row;
+  justify-content: "start";
+}
+
+.justify-sb {
+  justify-content: space-between;
+}
+
+.flex-vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.gap-min {
+  gap: 8px;
+}
+.gap-small {
+  gap: 16px;
+}
+.gap-default {
+  gap: 24px;
+}
+
+.form {
+  font-family: "Inter";
+  font-weight: 500;
+  text-transform: capitalize;
+  font-size: 16px;
+  letter-spacing: 0.3;
+  padding: 0;
+  margin-top: 0;
+}
+.range {
+  box-shadow: inset 0 0 0 0px #32323200;
+  padding: 0;
+}
+.range:focus {
+  padding: 0;
+  box-shadow: inset 0 0 0 0px #32323200;
+}
